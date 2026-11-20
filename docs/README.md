@@ -13,12 +13,16 @@ Este espacio es la fuente de verdad documental de HeldMe!.
 | `decisiones.md` | Registro de decisiones técnicas del equipo (ADRs breves). |
 | `pruebas/` | Casos de prueba de Iñaki: resultado esperado vs. obtenido, por RF y RNF. |
 
-## Pendiente inmediato (versión siguiente del SRS)
+## Aclaración sobre los nombres
 
-- ⚠️ **Unificar nombres de integrantes:** la portada del SRS v3.3 lista a Aaron, Benjamín,
-  Alexis, Uriel, Miguel e Ismael, y no coincide con el reparto real (Kassandra, Jorge,
-  Jeshua, Luis Ángel, Iñaki) ni con la tabla de firmas. Corregir en la próxima versión.
-- Completar la tabla de firmas con fecha de aprobación de los asesores.
+Los integrantes listados en la portada del SRS v3.3 (Aaron, Benjamín, Alexis, Uriel,
+Miguel e Ismael) son los **dueños del proyecto** (equipo propietario). El equipo de
+**desarrollo** es el que aparece en la tabla de roles del README: Kassandra, Jorge,
+Jeshua, Luis Ángel e Iñaki. Ambas listas son correctas; no debe "corregirse" la portada.
+
+## Pendiente inmediato
+
+- Completar la tabla de firmas del SRS con fecha de aprobación de los asesores.
 
 ## Reglas
 
