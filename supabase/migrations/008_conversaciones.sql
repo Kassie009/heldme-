@@ -1,0 +1,18 @@
+-- =============================================================================
+-- HeldMe! | Migracion 008 — 008 conversaciones
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-19, RNF-13
+-- Notas del diseno: Habilitar Realtime (supabase_realtime) para mensajes; historial persistido en PostgreSQL (RNF-13).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - conversaciones (vinculadas a solicitud, cotizacion o contratacion)
+--
+--   - mensajes (emisor, contenido, fecha) con particion o indice para paginacion
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

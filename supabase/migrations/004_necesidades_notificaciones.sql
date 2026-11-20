@@ -1,0 +1,18 @@
+-- =============================================================================
+-- HeldMe! | Migracion 004 — 004 necesidades notificaciones
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-12, RF-13
+-- Notas del diseno: Sin coordenadas GPS (ARQ-07). Notificaciones a profesionistas elegibles por categoria y zona (RF-13).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - necesidades (descripcion, categoria, imagenes opcionales, zona_aproximada)
+--
+--   - notificaciones (destinatario, tipo, leida)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

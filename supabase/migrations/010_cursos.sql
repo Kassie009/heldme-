@@ -1,0 +1,20 @@
+-- =============================================================================
+-- HeldMe! | Migracion 010 — 010 cursos
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-22, RF-23, RF-24, RF-25, RN-05, RN-14, RN-15
+-- Notas del diseno: El enlace externo solo es visible para inscritos (RN-05). Cupo verificado en la inscripcion (RF-25).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - instructores (autorizacion, requiere rango Plata+)
+--
+--   - cursos (estados: borrador, pendiente_revision, aprobado, publicado, pausado, rechazado, finalizado, cancelado; modalidad presencial/en_linea con enlace externo)
+--
+--   - inscripciones (alumno, curso, cupo verificado en transaccion)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

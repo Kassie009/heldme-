@@ -1,0 +1,22 @@
+-- =============================================================================
+-- HeldMe! | Migracion 002 — 002 profesionistas verificacion
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-03, RF-04, RN-02, RN-04
+-- Notas del diseno: Estados de RF-04. Rango inicial Bronce o Plata (RN-04). Evidencia obligatoria, certificados opcionales (RN-02).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - profesionistas (rango, trabajos_completados, calificacion_promedio)
+--
+--   - solicitudes_verificacion (estados: borrador, pendiente, requiere_informacion, aprobado, rechazado, suspendido)
+--
+--   - archivos_verificacion (ruta en bucket privado evidencias)
+--
+--   - historial_verificacion (decision, motivo, responsable, fecha)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

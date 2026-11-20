@@ -1,0 +1,22 @@
+-- =============================================================================
+-- HeldMe! | Migracion 006 — 006 contrataciones
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-17, RF-29, RF-32, RF-33, RN-08
+-- Notas del diseno: Solo transiciones validas de RF-17. Codigos de un solo uso con vigencia (RF-20, RF-29, RN-08).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - contrataciones (estados: publicado, en_cotizacion, contratado, en_proceso, pendiente_ajuste, pendiente_confirmacion, en_revision_administrativa, finalizado, cancelado)
+--
+--   - preguntas_acuerdo (preguntas predefinidas sobre materiales y gastos)
+--
+--   - acuerdos (contenido + confirmacion de ambas partes)
+--
+--   - codigos_servicio (codigo unico, tipo inicio/final, usado booleano, vigencia 24h)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

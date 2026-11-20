@@ -1,0 +1,18 @@
+-- =============================================================================
+-- HeldMe! | Migracion 001 — 001 perfiles
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-42, RN-01
+-- Notas del diseno: Fecha de nacimiento con restriccion de 18 anios; modo activo; version del documento aceptado (RF-42).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - perfiles (uuid, usuario_auth_id, nombre, fecha_nacimiento con CHECK >=18 anios, modo_activo, rol, zona_aproximada)
+--
+--   - aceptaciones_legales (version_terminos, version_privacidad, fecha de aceptacion)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

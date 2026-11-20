@@ -1,0 +1,16 @@
+-- =============================================================================
+-- HeldMe! | Migracion 013 — 013 historial eventos
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-27
+-- Notas del diseno: Historial inmutable: solo insercion, sin UPDATE ni DELETE (RF-27).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - historial_eventos (actor, fecha, accion, recurso_tipo, recurso_id) con REGLA o TRIGGER que impide UPDATE y DELETE (solo INSERT)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

@@ -1,0 +1,47 @@
+# ---- Entorno y secretos (ARQ-03: nunca subir claves) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# ---- Node ----
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json.bak
+dist/
+build/
+coverage/
+
+# ---- Expo / React Native ----
+.expo/
+*.apk
+*.aab
+*.ipa
+ios/
+android/
+eas.json.bak
+
+# ---- Supabase ----
+# Respaldos (RNF-11: se conservan FUERA del repositorio, fechados)
+supabase/backups/
+supabase/.temp/
+*.dump
+*.sql.gz
+*.backup
+
+# ---- Evidencias y archivos privados (ARQ-05) ----
+evidencias/
+uploads/
+*.pdf.tmp
+
+# ---- Editor y SO ----
+.vscode/*
+!.vscode/settings.json.recommended
+.idea/
+*.swp
+Thumbs.db
+.DS_Store

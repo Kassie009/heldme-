@@ -1,0 +1,20 @@
+-- =============================================================================
+-- HeldMe! | Migracion 011 — 011 pagos
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-36, RF-37, RF-38, RF-40, RN-08, RN-11
+-- Notas del diseno: eventos_stripe guarda el id de evento para descartar duplicados (RF-37). Solo Test Mode, captura manual (RN-08).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - pagos_prueba (estados: pendiente, preautorizado, capturado, rechazado, cancelado, reembolsado; recurso asociado)
+--
+--   - eventos_stripe (id de evento UNIQUE para descartar duplicados)
+--
+--   - comisiones (10% de mano de obra + diagnostico; material comprobado exento; cursos 10%)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

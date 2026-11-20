@@ -1,0 +1,18 @@
+-- =============================================================================
+-- HeldMe! | Migracion 009 — 009 calificaciones
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-20, RF-21, RN-04
+-- Notas del diseno: Una calificacion por contratacion; promedio < 4.0 bloquea ascenso sin descender de rango (RN-04).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - calificaciones (1 a 5 estrellas, una por contratacion, UNIQUE)
+--
+--   - metricas_profesionista (contador de trabajos, promedio, rango, strikes_activos)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

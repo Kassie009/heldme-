@@ -1,0 +1,18 @@
+-- =============================================================================
+-- HeldMe! | Migracion 007 — 007 disponibilidad
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-18
+-- Notas del diseno: Restriccion de exclusion contra reservas empalmadas; no se confirma una segunda reserva para el mismo recurso y horario (RF-18).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - disponibilidad (horarios del profesionista)
+--
+--   - reservas (recurso, horario) con CONSTRAINT de exclusion (EXCLUDE USING gist) contra empalmes
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

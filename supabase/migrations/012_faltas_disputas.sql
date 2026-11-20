@@ -1,0 +1,20 @@
+-- =============================================================================
+-- HeldMe! | Migracion 012 — 012 faltas disputas
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-30, RF-31, RF-34, RN-09
+-- Notas del diseno: El administrador confirma la falta antes del strike (RF-30, RF-31, RN-09). Resolucion indica captura total/parcial o cancelacion (RF-34, RN-15).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - reportes_inasistencia (explicacion, evidencias, decision admin)
+--
+--   - strikes (con fecha de caducidad a 6 meses para sanciones)
+--
+--   - disputas (estados: abierta, en_revision, resuelta, cerrada)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

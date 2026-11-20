@@ -1,0 +1,20 @@
+-- =============================================================================
+-- HeldMe! | Migracion 005 — 005 cotizaciones
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-14, RF-15, RF-16, RN-06, RNF-07
+-- Notas del diseno: Versiones inmutables: una modificacion genera nueva version y no altera la aceptada (RNF-07, RN-07). Concepto con tipo, cantidad, precio unitario y ruta de comprobante (RF-41).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - cotizaciones (necesidad, profesionista, estado)
+--
+--   - cotizacion_versiones (versiones INMUTABLES, tipo_costo fijo/estimado, condiciones)
+--
+--   - cotizacion_conceptos (tipo: mano_obra/diagnostico/material, cantidad, precio_unitario, comprobado booleano, ruta_comprobante)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================

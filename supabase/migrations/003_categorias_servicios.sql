@@ -1,0 +1,18 @@
+-- =============================================================================
+-- HeldMe! | Migracion 003 — 003 categorias servicios
+-- Responsable: Jeshua (base de datos)
+-- Requerimientos: RF-05, RF-06, RF-07, RN-03
+-- Notas del diseno: Servicio pausado o retirado no aparece en busquedas (RF-05). Zona aproximada como texto, sin GPS (ARQ-07).
+--
+-- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
+--
+--   - categorias (catalogo para autocompletado RF-07)
+--
+--   - servicios (propietario, categoria, zona_aproximada como texto, estados: publicado, pausado, retirado)
+--
+-- RECORDAR EN TODA MIGRACION:
+--   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
+--   * Llaves primarias uuid (gen_random_uuid()).
+--   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
+--   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
+-- =============================================================================
