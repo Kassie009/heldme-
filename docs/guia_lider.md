@@ -26,11 +26,11 @@ Resultado: nadie puede hacer push directo a `main`; todo pasa por PR que tú apr
 2. Agrega por su usuario de GitHub a: Jorge, Jeshua, Luis Ángel e Iñaki.
 3. Cada quien acepta la invitación desde su correo.
 
-### 3. Crear el tablero del proyecto
-1. Pestaña **Projects → New project (Board)**.
-2. Columnas: `Backlog` · `En progreso` · `En revisión` · `Hecho`.
-3. Crea una tarjeta por RF o bloque (ej. "RF-01 Registro"), asígnala al responsable
-   y ponla en la etapa correspondiente (usa el plan de trabajo de 5 etapas del PDF).
+### 3. Tablero del proyecto
+- El equipo usa **Trello** como tablero oficial (no duplicar en GitHub Projects).
+- Columnas acordadas: `Backlog` · `En progreso` · `En revisión` · `Hecho`.
+- Tarjetas por RF/bloque con responsable, siguiendo las 5 etapas del plan de trabajo
+  (docs/endpoints-esquema.pdf). Cada tarjeta enlaza su PR de GitHub y su caso de prueba.
 
 ### 4. Regla acordada con el equipo
 - Rama de trabajo: `feature/RF-XX-descripcion` creada **desde `develop`**.
