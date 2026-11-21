@@ -18,6 +18,7 @@ coverage/
 
 # ---- Expo / React Native ----
 .expo/
+.webtest/
 *.apk
 *.aab
 *.ipa
