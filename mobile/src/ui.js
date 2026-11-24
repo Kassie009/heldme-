@@ -81,6 +81,7 @@ export function Field({ label, children, right }) {
 export function TextInputBox({
   value, onChangeText, placeholder, secureTextEntry, keyboard,
   onSubmitEditing, invalid = false, style, icon,
+  multiline = false, numberOfLines, maxLength, returnKeyType, accessibilityLabel,
 }) {
   const [verClave, setVerClave] = useState(false);
   return (
@@ -94,6 +95,12 @@ export function TextInputBox({
         secureTextEntry={secureTextEntry && !verClave}
         keyboardType={keyboard}
         onSubmitEditing={onSubmitEditing}
+        multiline={multiline}
+        numberOfLines={numberOfLines}
+        maxLength={maxLength}
+        returnKeyType={returnKeyType}
+        accessibilityLabel={accessibilityLabel}
+        textAlignVertical={multiline ? 'top' : 'center'}
         style={styles.inputText}
       />
       {secureTextEntry ? (
@@ -164,6 +171,8 @@ export function PrimaryButton({ label, onPress, disabled = false, loading = fals
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: disabled || loading }}
       style={({ pressed }) => [
         styles.btnPrimary,
         (disabled || loading) && styles.btnDisabled,
@@ -184,11 +193,19 @@ export function PrimaryButton({ label, onPress, disabled = false, loading = fals
 }
 
 /** Botón secundario: fondo blanco, borde frío, texto azul marino. */
-export function SecondaryButton({ label, onPress, style }) {
+export function SecondaryButton({ label, onPress, disabled = false, style }) {
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.btnSecondary, pressed && styles.pressedSoft, style]}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      style={({ pressed }) => [
+        styles.btnSecondary,
+        disabled && styles.btnDisabled,
+        pressed && !disabled && styles.pressedSoft,
+        style,
+      ]}
     >
       <Text style={styles.btnSecondaryText}>{label}</Text>
     </Pressable>
@@ -196,14 +213,18 @@ export function SecondaryButton({ label, onPress, style }) {
 }
 
 /** Chip: cápsula con borde; activa en teal. */
-export function Chip({ label, active = false, onPress }) {
+export function Chip({ label, active = false, onPress, disabled = false }) {
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ selected: active, disabled }}
       style={({ pressed }) => [
         styles.chip,
         active && styles.chipActive,
-        pressed && !active && styles.pressedSoft,
+        disabled && styles.btnDisabled,
+        pressed && !active && !disabled && styles.pressedSoft,
       ]}
     >
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
@@ -294,7 +315,7 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   inputInvalid: { borderColor: colors.error, backgroundColor: '#FDF3F1' },
-  inputText: { flex: 1, fontSize: 14, color: colors.navy },
+  inputText: { flex: 1, fontSize: 14, fontFamily: F.reg, color: colors.navy },
   checkboxRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   checkboxBox: {
     width: 21,

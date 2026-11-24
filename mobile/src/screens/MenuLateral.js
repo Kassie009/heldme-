@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, F } from '../theme';
 import { MenuItem, DrawerSection } from '../ui';
 
-export default function MenuLateral({ nav, params }) {
+export default function MenuLateral({ nav, params, pantallaActual = 'buscar' }) {
   const tipo = params?.tipo ?? 'cliente';
   const nombre = params?.nombre ?? 'Aaron Félix';
 
@@ -69,14 +69,44 @@ export default function MenuLateral({ nav, params }) {
           ) : (
             <>
               <DrawerSection>Servicios</DrawerSection>
-              <MenuItem icon="search" label="Buscar" active onPress={() => nav.reset('buscar', { tipo, nombre })} />
-              <MenuItem icon="document-text" label="Mis solicitudes" onPress={() => nav.resetConPadre('buscar', 'misSolicitudes', { tipo, nombre })} />
-              <MenuItem icon="receipt" label="Cotizaciones recibidas" onPress={() => nav.resetConPadre('buscar', 'cotizaciones', { tipo, nombre })} />
-              <MenuItem icon="reader" label="Contrataciones" onPress={nav.back} />
-              <MenuItem icon="chatbubbles" label="Chat" onPress={nav.back} />
+              <MenuItem
+                icon="search"
+                label="Buscar"
+                active={pantallaActual === 'buscar'}
+                onPress={() => nav.reset('buscar', { tipo, nombre })}
+              />
+              <MenuItem
+                icon="document-text"
+                label="Mis solicitudes"
+                active={pantallaActual === 'misSolicitudes'}
+                onPress={() => nav.resetConPadre('buscar', 'misSolicitudes', { tipo, nombre })}
+              />
+              <MenuItem
+                icon="receipt"
+                label="Cotizaciones recibidas"
+                active={pantallaActual === 'cotizaciones'}
+                onPress={() => nav.resetConPadre('buscar', 'cotizaciones', { tipo, nombre })}
+              />
+              <MenuItem
+                icon="reader"
+                label="Contrataciones"
+                active={pantallaActual === 'contrataciones'}
+                onPress={() => nav.resetConPadre('buscar', 'contrataciones', { tipo, nombre })}
+              />
+              <MenuItem
+                icon="chatbubbles"
+                label="Chat"
+                active={pantallaActual === 'conversaciones'}
+                onPress={() => nav.resetConPadre('buscar', 'conversaciones', { tipo, nombre })}
+              />
 
               <DrawerSection>Aprendizaje</DrawerSection>
-              <MenuItem icon="school" label="Cursos" onPress={nav.back} />
+              <MenuItem
+                icon="school"
+                label="Cursos"
+                active={pantallaActual === 'cursos'}
+                onPress={() => nav.resetConPadre('buscar', 'cursos', { tipo, nombre })}
+              />
 
               <DrawerSection>Cuenta</DrawerSection>
               <MenuItem icon="person" label="Perfil" onPress={nav.back} />

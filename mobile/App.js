@@ -46,7 +46,19 @@ import SinResultados from './src/screens/SinResultados';
 import PublicarNecesidad from './src/screens/PublicarNecesidad';
 import MisSolicitudes from './src/screens/MisSolicitudes';
 import CotizacionesRecibidas from './src/screens/CotizacionesRecibidas';
+import Conversaciones from './src/screens/Conversaciones';
 import Chat from './src/screens/Chat';
+import AcuerdosServicio from './src/screens/AcuerdosServicio';
+import Contrataciones from './src/screens/Contrataciones';
+import ContratacionDetalle from './src/screens/ContratacionDetalle';
+import DesglosePago from './src/screens/DesglosePago';
+import PagoNoAutorizado from './src/screens/PagoNoAutorizado';
+import TrabajoAdicional from './src/screens/TrabajoAdicional';
+import CodigoFinalizacion from './src/screens/CodigoFinalizacion';
+import CalificarServicio from './src/screens/CalificarServicio';
+import ReportarInasistencia from './src/screens/ReportarInasistencia';
+import CancelarContratacion from './src/screens/CancelarContratacion';
+import Cursos from './src/screens/Cursos';
 import { colors, F } from './src/theme';
 
 const pantallas = {
@@ -63,7 +75,19 @@ const pantallas = {
   publicar: PublicarNecesidad,
   misSolicitudes: MisSolicitudes,
   cotizaciones: CotizacionesRecibidas,
+  conversaciones: Conversaciones,
   chat: Chat,
+  acuerdosServicio: AcuerdosServicio,
+  contrataciones: Contrataciones,
+  contratacionDetalle: ContratacionDetalle,
+  desglosePago: DesglosePago,
+  pagoNoAutorizado: PagoNoAutorizado,
+  trabajoAdicional: TrabajoAdicional,
+  codigoFinalizacion: CodigoFinalizacion,
+  calificar: CalificarServicio,
+  reportarInasistencia: ReportarInasistencia,
+  cancelarContratacion: CancelarContratacion,
+  cursos: Cursos,
 };
 
 export default function App() {
@@ -107,7 +131,9 @@ export default function App() {
         <StatusBar style="dark" />
         <View style={styles.contenedor}>
           <PantallaFondo nav={nav} params={fondo.params} />
-          {actual.s === 'menu' && <MenuLateral nav={nav} params={actual.params} />}
+          {actual.s === 'menu' && (
+            <MenuLateral nav={nav} params={actual.params} pantallaActual={fondo.s} />
+          )}
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

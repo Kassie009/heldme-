@@ -85,11 +85,21 @@ export default function CotizacionesRecibidas({ nav }) {
                   style={{ marginTop: spacing.md }}
                 />
                 {elegida && (
-                  <SecondaryButton
-                    label="Chatear con el profesionista"
-                    onPress={() => nav.push('chat')}
-                    style={{ marginTop: spacing.sm }}
-                  />
+                  <>
+                    <SecondaryButton
+                      label="Chatear con el profesionista"
+                      onPress={() => nav.push('chat', { nombre: c.nombre })}
+                      style={{ marginTop: spacing.sm }}
+                    />
+                    <TextLink
+                      onPress={() =>
+                        nav.push('acuerdosServicio', { folio: 'HM-2044', profesionista: c.nombre })
+                      }
+                      style={{ alignSelf: 'center', marginTop: spacing.md }}
+                    >
+                      Continuar a acuerdos del servicio
+                    </TextLink>
+                  </>
                 )}
               </>
             ) : (
