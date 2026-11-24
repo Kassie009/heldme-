@@ -1,116 +1,133 @@
 /**
  * HeldMe! — Componentes compartidos de interfaz (solo frontend).
- * Basados en el manual de identidad: tarjeta blanca, borde frío, botón teal.
+ * Basados en el nuevo mockup (App Móvil, 11 de 11 páginas) y el manual de
+ * identidad: tarjetas blancas con borde frío, etiquetas en mayúsculas,
+ * botón principal teal y barra superior con menú y logo centrado.
  */
-import React from 'react';
-import { Text, View, Pressable, StyleSheet, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, Pressable, StyleSheet, TextInput, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, spacing } from './theme';
+import { colors, radius, spacing, F } from './theme';
 
-/** Botón principal: teal #176B78, texto blanco, esquinas redondeadas. */
-export function PrimaryButton({ label, icon, onPress, style }) {
+/** Barra superior: menú hamburguesa a la izquierda y logo centrado. */
+export function TopBar({ onMenu, onBack }) {
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.btnPrimary,
-        pressed && { backgroundColor: colors.tealDeep },
-        style,
-      ]}
-    >
-      <Text style={styles.btnPrimaryText}>{label}</Text>
-      {icon ? <Ionicons name={icon} size={18} color={colors.white} /> : null}
-    </Pressable>
-  );
-}
-
-/** Botón secundario: fondo blanco, borde frío y texto azul marino. */
-export function SecondaryButton({ label, onPress, style }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [styles.btnSecondary, pressed && styles.hover, style]}
-    >
-      <Text style={styles.btnSecondaryText}>{label}</Text>
-    </Pressable>
-  );
-}
-
-/** Tarjeta: superficie blanca, borde sutil y sombra mínima. */
-export function Card({ children, style }) {
-  return <View style={[styles.card, style]}>{children}</View>;
-}
-
-/** Chip de categoría (manual: chips completos, nunca recortados). */
-export function Chip({ label, icon, active, onPress }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.chip,
-        active && styles.chipActive,
-        pressed && !active && styles.hover,
-      ]}
-    >
-      {icon ? (
-        <Ionicons
-          name={icon}
-          size={14}
-          color={active ? colors.white : colors.teal}
-        />
-      ) : null}
-      <Text style={[styles.chipText, active && styles.chipTextActive]}>
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
-/** Etiqueta de campo de formulario. */
-export function FieldLabel({ children, right }) {
-  return (
-    <View style={styles.fieldLabelRow}>
-      <Text style={styles.fieldLabel}>{children}</Text>
-      {right}
+    <View style={styles.topbar}>
+      {onBack ? (
+        <Pressable
+          onPress={onBack}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Regresar"
+          style={styles.topbarSide}
+        >
+          <Ionicons name="arrow-back" size={22} color={colors.navy} />
+        </Pressable>
+      ) : onMenu ? (
+        <Pressable
+          onPress={onMenu}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Abrir menú"
+          style={styles.topbarSide}
+        >
+          <Ionicons name="menu" size={24} color={colors.navy} />
+        </Pressable>
+      ) : (
+        <View style={styles.topbarSide} />
+      )}
+      <Image
+        source={require('../assets/logo-escudo.png')}
+        style={styles.escudoMini}
+        resizeMode="contain"
+      />
+      <View style={styles.topbarSide} />
     </View>
   );
 }
 
-/** Campo de entrada con icono a la izquierda. */
-export function Input({
-  icon,
-  placeholder,
-  value,
-  onChangeText,
-  multiline,
-  secureTextEntry,
-  right,
-  editable = true,
-  invalid = false,
-  keyboard = 'default',
-  style,
-}) {
+/** Logo completo (escudo + HeldMe!) del manual de identidad. */
+export function LogoMark({ width = 150 }) {
   return (
-    <View style={[styles.inputWrap, multiline && styles.inputWrapMultiline, invalid && styles.inputInvalid, style]}>
-      {icon ? <Ionicons name={icon} size={18} color={colors.textSec} /> : null}
+    <Image
+      source={require('../assets/logo.png')}
+      style={{ width, height: width * 0.793, alignSelf: 'center' }}
+      resizeMode="contain"
+      fadeDuration={0}
+    />
+  );
+}
+
+/** Etiqueta de campo: mayúsculas pequeñas, gris (como en el mockup). */
+export function Label({ children, style }) {
+  return <Text style={[styles.label, style]}>{children}</Text>;
+}
+
+/** Agrupa etiqueta + control con el espaciado del mockup. */
+export function Field({ label, children, right }) {
+  return (
+    <View style={styles.field}>
+      <View style={styles.fieldLabelRow}>
+        <Label>{label}</Label>
+        {right}
+      </View>
+      {children}
+    </View>
+  );
+}
+
+/** Campo de texto: fondo blanco, borde frío, radio medio. Las contraseñas
+ *  incluyen el clásico ojito para mostrar/ocultar. */
+export function TextInputBox({
+  value, onChangeText, placeholder, secureTextEntry, keyboard,
+  onSubmitEditing, invalid = false, style, icon,
+}) {
+  const [verClave, setVerClave] = useState(false);
+  return (
+    <View style={[styles.inputWrap, invalid && styles.inputInvalid, style]}>
+      {icon ? <Ionicons name={icon} size={17} color={colors.textSec} /> : null}
       <TextInput
         placeholder={placeholder}
         placeholderTextColor={colors.textSec}
         value={value}
         onChangeText={onChangeText}
-        multiline={multiline}
-        secureTextEntry={secureTextEntry}
-        editable={editable}
+        secureTextEntry={secureTextEntry && !verClave}
         keyboardType={keyboard}
-        style={[styles.inputText, multiline && styles.inputTextMultiline]}
+        onSubmitEditing={onSubmitEditing}
+        style={styles.inputText}
       />
-      {right}
+      {secureTextEntry ? (
+        <Pressable
+          onPress={() => setVerClave(!verClave)}
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel={verClave ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+        >
+          <Ionicons
+            name={verClave ? 'eye-off' : 'eye'}
+            size={19}
+            color={colors.textSec}
+          />
+        </Pressable>
+      ) : null}
     </View>
   );
 }
 
-/** Casilla de verificación: teal cuando está activa. */
-export function Checkbox({ checked, onPress, label, linkLabel, onLinkPress }) {
+/** Selector estático (solo frontend): muestra el valor con chevron. */
+export function SelectBox({ value, placeholder }) {
+  return (
+    <View style={styles.inputWrap}>
+      <Text style={[styles.inputText, !value && { color: colors.textSec }]}>
+        {value || placeholder}
+      </Text>
+      <Ionicons name="chevron-down" size={16} color={colors.navy} />
+    </View>
+  );
+}
+
+/** Casilla de verificación con texto (y enlace opcional). */
+export function Checkbox({ checked, onPress, label }) {
   return (
     <Pressable
       onPress={onPress}
@@ -119,80 +136,179 @@ export function Checkbox({ checked, onPress, label, linkLabel, onLinkPress }) {
       style={styles.checkboxRow}
     >
       <View style={[styles.checkboxBox, checked && styles.checkboxBoxChecked]}>
-        {checked ? <Ionicons name="checkmark" size={15} color={colors.white} /> : null}
+        {checked ? <Ionicons name="checkmark" size={15} color={colors.teal} /> : null}
       </View>
-      <Text style={styles.checkboxText}>
-        {label}
-        {linkLabel ? (
-          <Text onPress={onLinkPress} style={styles.checkboxLink}>
-            {' '}
-            {linkLabel}
-          </Text>
-        ) : null}
-      </Text>
+      <Text style={styles.checkboxText}>{label}</Text>
     </Pressable>
   );
 }
 
-/** Barra de navegación inferior: blanca con línea superior, activo en teal. */
-export function TabBar({ active = 'Explorar' }) {
-  const tabs = [
-    { key: 'Explorar', icon: 'compass-outline' },
-    { key: 'Actividad', icon: 'briefcase-outline' },
-    { key: 'Mensajes', icon: 'chatbubble-ellipses-outline', dot: true },
-    { key: 'Perfil', icon: 'person-outline' },
-  ];
+/** Tarjeta blanca con borde frío. */
+export function Card({ children, style, selected = false }) {
   return (
-    <View style={styles.tabbar}>
-      {tabs.map((t) => {
-        const isActive = t.key === active;
-        return (
-          <View key={t.key} style={styles.tabItem}>
-            <View style={isActive ? styles.tabIconActive : null}>
-              <Ionicons
-                name={t.icon}
-                size={22}
-                color={isActive ? colors.teal : colors.textSec}
-              />
-              {t.dot ? <View style={styles.tabDot} /> : null}
-            </View>
-            <Text style={[styles.tabLabel, isActive && { color: colors.teal }]}>
-              {t.key}
-            </Text>
-          </View>
-        );
-      })}
+    <View
+      style={[
+        styles.card,
+        selected && { borderColor: colors.teal, borderWidth: 2 },
+        style,
+      ]}
+    >
+      {children}
     </View>
   );
 }
 
+/** Botón principal: teal con etiqueta blanca; con estado de carga. */
+export function PrimaryButton({ label, onPress, disabled = false, loading = false, loadingLabel, style }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled || loading}
+      style={({ pressed }) => [
+        styles.btnPrimary,
+        (disabled || loading) && styles.btnDisabled,
+        pressed && !disabled && !loading && { backgroundColor: colors.tealDeep },
+        style,
+      ]}
+    >
+      {loading ? (
+        <View style={styles.btnLoadingRow}>
+          <ActivityIndicator color={colors.white} size="small" />
+          <Text style={styles.btnPrimaryText}>{loadingLabel || 'Cargando...'}</Text>
+        </View>
+      ) : (
+        <Text style={styles.btnPrimaryText}>{label}</Text>
+      )}
+    </Pressable>
+  );
+}
+
+/** Botón secundario: fondo blanco, borde frío, texto azul marino. */
+export function SecondaryButton({ label, onPress, style }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.btnSecondary, pressed && styles.pressedSoft, style]}
+    >
+      <Text style={styles.btnSecondaryText}>{label}</Text>
+    </Pressable>
+  );
+}
+
+/** Chip: cápsula con borde; activa en teal. */
+export function Chip({ label, active = false, onPress }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.chip,
+        active && styles.chipActive,
+        pressed && !active && styles.pressedSoft,
+      ]}
+    >
+      <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+/** Insignia pequeña (estado, rango, contador). */
+export function Badge({ label, tone = 'mint' }) {
+  return (
+    <View style={[styles.badge, tone === 'teal' && styles.badgeTeal, tone === 'warn' && styles.badgeWarn, tone === 'danger' && styles.badgeDanger]}>
+      <Text style={[styles.badgeText, tone === 'teal' && styles.badgeTextTeal, tone === 'warn' && styles.badgeTextWarn, tone === 'danger' && styles.badgeTextDanger]}>
+        {label}
+      </Text>
+    </View>
+  );
+}
+
+/** Enlace de texto en teal. */
+export function TextLink({ children, onPress, style }) {
+  return (
+    <Pressable onPress={onPress} hitSlop={8} style={style}>
+      <Text style={styles.textLink}>{children}</Text>
+    </Pressable>
+  );
+}
+
+/** Mensaje de error inline. */
+export function ErrorText({ children }) {
+  if (!children) return null;
+  return <Text style={styles.errorText}>{children}</Text>;
+}
+
+/** Fila de ítem del menú lateral. */
+export function MenuItem({ icon, label, active = false, onPress, right }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.menuItem,
+        active && styles.menuItemActive,
+        pressed && !active && styles.pressedSoft,
+      ]}
+    >
+      <Ionicons name={icon} size={18} color={active ? colors.teal : colors.navy} />
+      <Text style={[styles.menuItemText, active && { color: colors.teal, fontWeight: '700', fontFamily: F.bold }]}>
+        {label}
+      </Text>
+      {right}
+    </Pressable>
+  );
+}
+
+/** Título de sección dentro del menú lateral. */
+export function DrawerSection({ children }) {
+  return <Text style={styles.drawerSection}>{children}</Text>;
+}
+
 const styles = StyleSheet.create({
-  btnPrimary: {
-    backgroundColor: colors.teal,
-    borderRadius: radius.md,
-    paddingVertical: 16,
-    paddingHorizontal: spacing.xl,
+  topbar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-  btnPrimaryText: {
-    color: colors.white,
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  btnSecondary: {
-    backgroundColor: colors.white,
-    borderRadius: radius.md,
-    paddingVertical: 14,
+    justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
+  },
+  topbarSide: { width: 34, alignItems: 'center' },
+  escudoMini: { width: 30, height: 33 },
+  label: {
+    fontSize: 10.5,
+    fontWeight: '700', fontFamily: F.bold,
+    color: colors.textSec,
+    letterSpacing: 0.8,
+    marginBottom: 6,
+  },
+  field: { marginBottom: spacing.md },
+  fieldLabelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
-    alignItems: 'center',
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    minHeight: 48,
   },
-  btnSecondaryText: { color: colors.navy, fontWeight: '600', fontSize: 14 },
-  hover: { backgroundColor: colors.panel },
+  inputInvalid: { borderColor: colors.error, backgroundColor: '#FDF3F1' },
+  inputText: { flex: 1, fontSize: 14, color: colors.navy },
+  checkboxRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  checkboxBox: {
+    width: 21,
+    height: 21,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    borderColor: colors.borderStrong,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 1,
+  },
+  checkboxBoxChecked: { backgroundColor: colors.mint, borderColor: colors.mint },
+  checkboxText: { flex: 1, fontSize: 13, color: colors.navy, lineHeight: 18 },
   card: {
     backgroundColor: colors.white,
     borderRadius: radius.lg,
@@ -200,10 +316,29 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.lg,
   },
-  chip: {
-    flexDirection: 'row',
+  btnPrimary: {
+    backgroundColor: colors.teal,
+    borderRadius: 26,
+    paddingVertical: 16,
+    paddingHorizontal: spacing.xl,
     alignItems: 'center',
-    gap: 6,
+    justifyContent: 'center',
+  },
+  btnPrimaryText: { color: colors.white, fontWeight: '700', fontFamily: F.bold, fontSize: 15 },
+  btnDisabled: { opacity: 0.55 },
+  btnLoadingRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  btnSecondary: {
+    backgroundColor: colors.white,
+    borderRadius: 26,
+    paddingVertical: 15,
+    paddingHorizontal: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+  },
+  btnSecondaryText: { color: colors.navy, fontWeight: '600', fontFamily: F.semi, fontSize: 14 },
+  pressedSoft: { backgroundColor: colors.panel },
+  chip: {
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
@@ -212,68 +347,40 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
   chipActive: { backgroundColor: colors.teal, borderColor: colors.teal },
-  chipText: { color: colors.navy, fontWeight: '600', fontSize: 13 },
+  chipText: { color: colors.navy, fontWeight: '600', fontFamily: F.semi, fontSize: 13 },
   chipTextActive: { color: colors.white },
-  fieldLabelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  fieldLabel: { fontWeight: '700', fontSize: 13, color: colors.navy },
-  inputWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.panel,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
-    minHeight: 50,
-  },
-  inputWrapMultiline: { alignItems: 'flex-start', paddingVertical: spacing.md, minHeight: 96 },
-  inputText: { flex: 1, fontSize: 14, color: colors.navy },
-  inputTextMultiline: { textAlignVertical: 'top' },
-  inputInvalid: { borderColor: '#C24C3F', backgroundColor: '#FDF3F1' },
-  checkboxRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  checkboxBox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 1,
-  },
-  checkboxBoxChecked: { backgroundColor: colors.teal, borderColor: colors.teal },
-  checkboxText: { flex: 1, fontSize: 13, color: colors.navy, lineHeight: 19 },
-  checkboxLink: { color: colors.teal, fontWeight: '700' },
-  tabbar: {
-    flexDirection: 'row',
-    backgroundColor: colors.white,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    paddingTop: spacing.sm,
-    paddingBottom: 18,
-  },
-  tabItem: { flex: 1, alignItems: 'center', gap: 3 },
-  tabIconActive: {
+  badge: {
     backgroundColor: colors.mint,
     borderRadius: radius.pill,
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
     paddingVertical: 4,
+    alignSelf: 'flex-start',
   },
-  tabDot: {
-    position: 'absolute',
-    top: -2,
-    right: -4,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.teal,
+  badgeTeal: { backgroundColor: colors.teal },
+  badgeWarn: { backgroundColor: colors.warnBg },
+  badgeDanger: { backgroundColor: '#F8E3DF' },
+  badgeText: { fontSize: 11, fontWeight: '700', fontFamily: F.bold, color: colors.navy },
+  badgeTextTeal: { color: colors.white },
+  badgeTextWarn: { color: colors.warnText },
+  badgeTextDanger: { color: colors.error },
+  textLink: { color: colors.teal, fontWeight: '700', fontFamily: F.bold, fontSize: 13 },
+  errorText: { color: colors.error, fontSize: 12, fontWeight: '600', fontFamily: F.semi, marginTop: 4 },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 11,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.md,
   },
-  tabLabel: { fontSize: 11, fontWeight: '600', color: colors.textSec },
+  menuItemActive: { backgroundColor: colors.mint },
+  menuItemText: { fontSize: 14, fontWeight: '600', fontFamily: F.semi, color: colors.navy, flex: 1 },
+  drawerSection: {
+    fontSize: 10.5,
+    fontWeight: '700', fontFamily: F.bold,
+    color: colors.textSec,
+    letterSpacing: 0.8,
+    marginTop: spacing.lg,
+    marginBottom: 4,
+  },
 });

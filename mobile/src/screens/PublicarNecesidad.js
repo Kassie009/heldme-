@@ -1,200 +1,176 @@
 /**
- * HeldMe! — Pantalla 04 / Publicar una necesidad (RF-12, ARQ-07, RNF-12)
- * Mockup: MÓVIL PANTALLA 04/19 · Publicar Necesidad del Cliente.
- * Solo frontend: formulario estático con datos de ejemplo; sin GPS (ARQ-07).
+ * HeldMe! — Pantalla 11 · Publicar necesidad
+ * Mockup: App Móvil 3 de 11 · 1 - Publicar necesidad.
+ * Descripción, categoría, imágenes opcionales y zona aproximada (sin GPS).
  */
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, Image, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, spacing } from '../theme';
-import { PrimaryButton, Card, FieldLabel, TabBar } from '../ui';
+import * as ImagePicker from 'expo-image-picker';
+import { colors, radius, spacing, F } from '../theme';
+import { TopBar, Field, TextInputBox, SelectBox, Badge, PrimaryButton, ErrorText } from '../ui';
 
-export default function PublicarNecesidad({ onBack }) {
+export default function PublicarNecesidad({ nav }) {
+  const [d, setD] = useState({
+    que: 'Fuga de agua bajo el fregadero',
+    categoria: 'Plomería',
+    zona: 'SLRC · Col. Centro · CP 83400',
+  });
+  const [fotos, setFotos] = useState([]);
+  const [aviso, setAviso] = useState('');
+  const [errores, setErrores] = useState({});
+
+  const adjuntar = async () => {
+    setAviso('');
+    const resultado = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsMultipleSelection: true,
+      selectionLimit: 5 - fotos.length,
+      quality: 0.8,
+    });
+    if (resultado.canceled) return;
+
+    for (const asset of resultado.assets) {
+      const tipoOk = /\/(jpeg|jpg|png|webp)$/.test(asset.mimeType || asset.uri.split('.').pop());
+      const megaBytes = (asset.fileSize || 0) / (1024 * 1024);
+      if (!tipoOk) {
+        setAviso('Solo se permiten imágenes JPG, PNG o WebP.');
+        continue;
+      }
+      if (megaBytes > 5) {
+        setAviso(`"${asset.fileName || 'Imagen'}" supera el máximo de 5 MB.`);
+        continue;
+      }
+      setFotos((f) => (f.length < 5 ? [...f, asset.uri] : f));
+    }
+  };
+
+  const quitarFoto = (uri) => setFotos((f) => f.filter((x) => x !== uri));
+
+  const publicar = () => {
+    const e = {};
+    if (!d.que.trim()) e.que = 'Describe lo que necesitas.';
+    if (!d.zona.trim()) e.zona = 'Escribe tu zona aproximada (colonia, ciudad o CP).';
+    setErrores(e);
+    if (Object.keys(e).length === 0) nav.replace('misSolicitudes');
+  };
+
   return (
-    <View style={styles.screen}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        bounces={false}
-        showsVerticalScrollIndicator={false}
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content} bounces={false}>
+      <TopBar onBack={nav.back} />
+      <Text style={styles.titulo}>Publicar necesidad</Text>
+      <Text style={styles.sub}>Los profesionistas de tu zona recibirán la solicitud.</Text>
+
+      <Field label="QUÉ NECESITAS" style={{ marginTop: spacing.lg }}>
+        <TextInputBox
+          placeholder="Describe tu problema o necesidad"
+          value={d.que}
+          onChangeText={(v) => setD((p) => ({ ...p, que: v }))}
+          invalid={!!errores.que}
+          style={{ minHeight: 72, alignItems: 'flex-start', paddingVertical: 12 }}
+        />
+      </Field>
+      <ErrorText>{errores.que}</ErrorText>
+
+      <Field label="CATEGORÍA">
+        <SelectBox value={d.categoria} placeholder="Elige una categoría" />
+      </Field>
+
+      <Field label="ZONA APROXIMADA">
+        <TextInputBox
+          placeholder="Ciudad · Colonia · Código postal"
+          value={d.zona}
+          onChangeText={(v) => setD((p) => ({ ...p, zona: v }))}
+          invalid={!!errores.zona}
+        />
+      </Field>
+      <ErrorText>{errores.zona}</ErrorText>
+
+      <Field
+        label="IMÁGENES (OPCIONAL)"
+        right={
+          <View style={styles.fotosChip}>
+            <Ionicons name="image" size={14} color={colors.teal} />
+            <Text style={styles.fotosTexto}>{fotos.length} fotos</Text>
+          </View>
+        }
       >
-        {/* Barra superior */}
-        <View style={styles.topbar}>
-          <Pressable
-            onPress={onBack}
-            style={styles.backBtn}
-            accessibilityRole="button"
-            accessibilityLabel="Regresar"
-          >
-            <Ionicons name="arrow-back" size={20} color={colors.navy} />
-          </Pressable>
-          <Text style={styles.titulo} numberOfLines={1}>
-            Publicar necesidad
+        {fotos.length > 0 && (
+          <View style={styles.miniaturas}>
+            {fotos.map((uri) => (
+              <Pressable key={uri} onPress={() => quitarFoto(uri)} hitSlop={6}>
+                <Image source={{ uri }} style={styles.miniatura} />
+                <View style={styles.miniaturaX}>
+                  <Ionicons name="close" size={12} color={colors.white} />
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        )}
+        <Pressable
+          onPress={adjuntar}
+          disabled={fotos.length >= 5}
+          style={({ pressed }) => [styles.adjuntar, pressed && { backgroundColor: colors.mint }, fotos.length >= 5 && { opacity: 0.5 }]}
+          accessibilityRole="button"
+          accessibilityLabel="Adjuntar imágenes"
+        >
+          <Ionicons name="image" size={17} color={colors.teal} />
+          <Text style={styles.adjuntarTexto}>
+            {fotos.length >= 5 ? 'Máximo 5 imágenes' : 'Adjuntar imágenes JPG, PNG o WebP (máx 5 MB)'}
           </Text>
-          <View style={styles.gratisChip}>
-            <Text style={styles.gratisText}>Gratis</Text>
-          </View>
-        </View>
+        </Pressable>
+        {aviso ? <Text style={styles.aviso}>{aviso}</Text> : null}
+      </Field>
 
-        {/* Categoría y descripción */}
-        <Card style={styles.card}>
-          <FieldLabel>Categoría del servicio</FieldLabel>
-          <View style={styles.select}>
-            <Text style={styles.selectText} numberOfLines={1}>
-              Plomería
-            </Text>
-            <Ionicons name="chevron-down" size={16} color={colors.navy} />
-          </View>
-
-          <FieldLabel style={{ marginTop: spacing.lg }}>
-            Describe tu problema o necesidad
-          </FieldLabel>
-          <View style={styles.textarea}>
-            <Text style={styles.textareaText}>
-              Fuga de agua constante debajo del fregadero de la cocina al abrir
-              la llave mezcladora.
-            </Text>
-          </View>
-        </Card>
-
-        {/* Zona aproximada — sin GPS (ARQ-07) */}
-        <Card style={styles.card}>
-          <View style={styles.zonaHeader}>
-            <View style={styles.zonaTitulo}>
-              <Ionicons name="location-outline" size={15} color={colors.teal} />
-              <Text style={styles.cardTitulo}>Zona aproximada</Text>
-            </View>
-            <Text style={styles.zonaNota}>
-              Solo zona aproximada · sin GPS preciso
-            </Text>
-          </View>
-          <View style={styles.zonaFields}>
-            <View style={{ flex: 1 }}>
-              <FieldLabel>Ciudad</FieldLabel>
-              <View style={styles.select}>
-                <Text style={styles.selectText} numberOfLines={1}>
-                  San Luis Río Colorado
-                </Text>
-              </View>
-            </View>
-            <View style={{ flex: 1 }}>
-              <FieldLabel>Colonia o C.P.</FieldLabel>
-              <View style={styles.select}>
-                <Text style={styles.selectText} numberOfLines={1}>
-                  Col. Centro · 83400
-                </Text>
-              </View>
-            </View>
-          </View>
-        </Card>
-
-        {/* Fotografías opcionales — límite 5 MB (RNF-12) */}
-        <Card style={styles.card}>
-          <View style={styles.fotosHeader}>
-            <Text style={styles.cardTitulo}>Fotografías de referencia (opcional)</Text>
-            <Text style={styles.fotosMax}>Máx 5 MB</Text>
-          </View>
-          <View style={styles.dropzone}>
-            <Ionicons name="image-outline" size={26} color={colors.teal} />
-            <Text style={styles.dropzoneTitulo}>
-              Adjuntar imágenes JPG, PNG o WebP
-            </Text>
-            <Text style={styles.dropzoneAyuda}>
-              Ayuda a recibir cotizaciones más exactas
-            </Text>
-          </View>
-        </Card>
-
-        {/* Publicar */}
-        <PrimaryButton label="Publicar y notificar profesionistas" />
-      </ScrollView>
-      <TabBar active="Explorar" />
-    </View>
+      <PrimaryButton
+        label="Publicar necesidad"
+        onPress={publicar}
+        style={{ marginTop: spacing.lg }}
+      />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
-  content: { padding: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.lg },
-  topbar: {
+  content: { paddingHorizontal: spacing.xl, paddingBottom: spacing.xl * 2 },
+  titulo: { fontSize: 24, fontWeight: '800', fontFamily: F.extra, color: colors.navy },
+  sub: { color: colors.textSec, fontSize: 13, marginTop: 4 },
+  fotosChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
-    paddingTop: spacing.xl,
-  },
-  backBtn: {
+    gap: 4,
     backgroundColor: colors.mint,
-    borderRadius: radius.md,
-    padding: 10,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
-  titulo: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: 17,
-    fontWeight: '800',
-    color: colors.navy,
+  fotosTexto: { fontSize: 11, fontWeight: '700', fontFamily: F.bold, color: colors.teal },
+  miniaturas: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  miniatura: { width: 62, height: 62, borderRadius: 10 },
+  miniaturaX: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: colors.navy,
+    borderRadius: 9,
+    width: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  gratisChip: {
-    backgroundColor: colors.mint,
-    borderRadius: radius.pill,
+  adjuntar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    paddingVertical: 13,
     paddingHorizontal: 12,
-    paddingVertical: 6,
   },
-  gratisText: { color: colors.teal, fontWeight: '700', fontSize: 12 },
-  card: { gap: spacing.md },
-  cardTitulo: { fontWeight: '700', fontSize: 14, color: colors.navy },
-  select: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.panel,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    minHeight: 50,
-  },
-  selectText: { color: colors.navy, fontSize: 14, fontWeight: '500' },
-  textarea: {
-    backgroundColor: colors.panel,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    minHeight: 110,
-  },
-  textareaText: { color: colors.navy, fontSize: 14, lineHeight: 20 },
-  zonaHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  zonaTitulo: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  zonaNota: {
-    color: colors.textSec,
-    fontSize: 10,
-    fontWeight: '500',
-    textAlign: 'right',
-    flexShrink: 1,
-    maxWidth: 130,
-  },
-  zonaFields: { flexDirection: 'row', gap: spacing.md },
-  fotosHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  fotosMax: { color: colors.textSec, fontSize: 11, fontWeight: '600' },
-  dropzone: {
-    alignItems: 'center',
-    gap: 5,
-    backgroundColor: colors.mint,
-    borderWidth: 1.5,
-    borderColor: colors.teal,
-    borderStyle: 'dashed',
-    borderRadius: radius.lg,
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.lg,
-  },
-  dropzoneTitulo: { fontWeight: '700', color: colors.navy, fontSize: 13 },
-  dropzoneAyuda: { color: colors.textSec, fontSize: 11 },
+  adjuntarTexto: { flex: 1, color: colors.navy, fontSize: 12, fontWeight: '600', fontFamily: F.semi, lineHeight: 17 },
+  aviso: { color: colors.error, fontSize: 12, fontWeight: '600', fontFamily: F.semi, marginTop: 6 },
 });

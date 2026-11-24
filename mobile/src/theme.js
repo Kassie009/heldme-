@@ -1,26 +1,34 @@
 /**
- * HeldMe! — Tokens de identidad visual (docs: Manual de identidad v2026)
- * Paleta fría: fondos blancos, texto azul marino y acentos teal para acciones.
+ * HeldMe! — Tokens de identidad visual.
+ * Colores muestreados directamente de los mockups y el manual de identidad.
+ * Tipografía: Plus Jakarta Sans (Regular 400 · Medium 500 · SemiBold 600 ·
+ * Bold 700 · ExtraBold 800).
  */
 export const colors = {
-  navy: '#102044',      // Títulos, texto principal, iconos de alto contraste
-  teal: '#176B78',      // Acciones principales, selección activa, iconos clave
+  navy: '#0D2042',      // Títulos, texto principal, iconos de alto contraste
+  teal: '#176A78',      // Acciones principales, selección activa, iconos clave
   tealDeep: '#125865',  // Estados hover y énfasis interactivo
   white: '#FFFFFF',     // Tarjetas, campos, navegación y superficies
-  canvas: '#F4F7F8',    // Fondo exterior de pantallas
+  canvas: '#F6F9FA',    // Fondo exterior de pantallas
   panel: '#F1F5F7',     // Paneles de apoyo y superficies secundarias
-  mint: '#E6EFF0',      // Chips, estados suaves y fondos de iconos
-  border: '#D8E1E5',    // Separadores, contornos y límites
-  textSec: '#53646A',   // Descripciones, ayudas y metadatos
+  mint: '#E8EFF1',      // Chips, estados suaves y fondos de iconos
+  border: '#D8E4E7',    // Contornos de campos y tarjetas
+  borderStrong: '#C8D3D9', // Separadores y divisiones de listas
+  textSec: '#5B6678',   // Descripciones, ayudas y metadatos
+  warnBg: '#FBF9F0',    // Aviso de búsqueda convencional / ortografía
+  warnBorder: '#E3D5A7',
+  warnText: '#6A5312',
+  error: '#B3402F',
 };
 
-export const type = {
-  // Nota: Plus Jakarta Sans se agregará con expo-font; por ahora usa la del sistema.
-  title: { fontSize: 24, fontWeight: '700', color: colors.navy },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.navy },
-  body: { fontSize: 14, color: colors.navy },
-  helper: { fontSize: 11, fontWeight: '500', color: colors.textSec },
+// Familia tipográfica Plus Jakarta Sans (expo-google-fonts)
+export const F = {
+  reg: 'PlusJakartaSans_400Regular',
+  med: 'PlusJakartaSans_500Medium',
+  semi: 'PlusJakartaSans_600SemiBold',
+  bold: 'PlusJakartaSans_700Bold',
+  extra: 'PlusJakartaSans_800ExtraBold',
 };
 
-export const radius = { sm: 10, md: 14, lg: 20, pill: 999 };
+export const radius = { sm: 8, md: 12, lg: 16, pill: 999 };
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 };
