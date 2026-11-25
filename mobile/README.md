@@ -1,29 +1,29 @@
-# mobile/ — App móvil HeldMe! (Jorge, frontend)
+# HeldMe Mobile (Expo Go)
 
-Expo + React Native. **Una sola app** para cliente y profesionista (RN-12, ARQ-02):
-no existe portal web de trabajador; el profesionista hace todo desde la móvil.
+Maquetas móviles en Expo + React Native para las pantallas cliente y profesionista.
 
-## Creación del proyecto
+## Requisitos
+
+- Node.js 20+
+- App **Expo Go** en el teléfono
+
+## Ejecutar en local
 
 ```bash
-# Dentro de esta carpeta, cuando se inicie la app:
-npx create-expo-app@latest . --template blank
-npx expo start          # probar con Expo Go
+npm install
+npx expo start
 ```
 
-## Alcance de pantallas
+Después abre el QR desde Expo Go.
 
-- Registro con fecha de nacimiento y aceptación de términos/privacidad (RF-42).
-- Perfil y cambio de modo cliente/profesionista (RF-02).
-- Solicitud de modo profesionista con evidencia obligatoria (RF-03).
-- Búsqueda con IA y fallback convencional (RF-06..RF-11, RF-35).
-- Publicar necesidades, cotizaciones, chat, códigos, calificaciones (RF-12..RF-21, RF-29).
-- Panel del profesionista: servicios, solicitudes, cotizaciones, calendario, cursos (RF-39).
+## Pantallas incluidas
 
-## Reglas de Jorge
+- Cliente: detalle de curso, mi inscripción, perfil con pagos de prueba.
+- Verificación profesional: pendiente, requiere información, rechazada y aprobada.
+- Panel profesional: menú lateral, mis servicios, publicar servicio, solicitudes, calendario y nueva cotización.
 
-- Solo usa la **anon key** de Supabase; toda operación sensible pasa por la API (ARQ-03).
-- Validar archivos en cliente: JPG/JPEG/PNG/WebP ≤ 5 MB, PDF ≤ 10 MB (RNF-12).
-- Suscribirse a Supabase Realtime para el chat (RNF-13).
-- Mensajes de error comprensibles y reintentos sin duplicar (RNF-09).
-- Mientras el backend no esté listo, trabajar con **datos simulados** (mocks).
+## Rutas
+
+Las rutas viven en `src/app/` usando `expo-router`.
+La pantalla inicial (`/`) funciona como índice para entrar a cada maqueta.
+
