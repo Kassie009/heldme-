@@ -81,10 +81,20 @@ export function Field({ label, children, right }) {
 export function TextInputBox({
   value, onChangeText, placeholder, secureTextEntry, keyboard,
   onSubmitEditing, invalid = false, style, icon,
+  multiline = false, numberOfLines, maxLength, returnKeyType, accessibilityLabel,
+  editable = true, submitBehavior,
 }) {
   const [verClave, setVerClave] = useState(false);
   return (
-    <View style={[styles.inputWrap, invalid && styles.inputInvalid, style]}>
+    <View
+      style={[
+        styles.inputWrap,
+        multiline && styles.inputWrapMultiline,
+        invalid && styles.inputInvalid,
+        !editable && styles.inputDisabled,
+        style,
+      ]}
+    >
       {icon ? <Ionicons name={icon} size={17} color={colors.textSec} /> : null}
       <TextInput
         placeholder={placeholder}
@@ -94,7 +104,15 @@ export function TextInputBox({
         secureTextEntry={secureTextEntry && !verClave}
         keyboardType={keyboard}
         onSubmitEditing={onSubmitEditing}
-        style={styles.inputText}
+        multiline={multiline}
+        numberOfLines={numberOfLines}
+        maxLength={maxLength}
+        returnKeyType={returnKeyType}
+        accessibilityLabel={accessibilityLabel}
+        editable={editable}
+        submitBehavior={submitBehavior}
+        textAlignVertical={multiline ? 'top' : 'center'}
+        style={[styles.inputText, multiline && styles.inputTextMultiline]}
       />
       {secureTextEntry ? (
         <Pressable
@@ -164,6 +182,8 @@ export function PrimaryButton({ label, onPress, disabled = false, loading = fals
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: disabled || loading }}
       style={({ pressed }) => [
         styles.btnPrimary,
         (disabled || loading) && styles.btnDisabled,
@@ -183,27 +203,47 @@ export function PrimaryButton({ label, onPress, disabled = false, loading = fals
   );
 }
 
-/** Botón secundario: fondo blanco, borde frío, texto azul marino. */
-export function SecondaryButton({ label, onPress, style }) {
+/** Botón secundario: fondo blanco, borde frío, texto azul marino; con estado de carga opcional. */
+export function SecondaryButton({ label, onPress, disabled = false, loading = false, loadingLabel, style }) {
+  const bloqueado = disabled || loading;
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.btnSecondary, pressed && styles.pressedSoft, style]}
+      disabled={bloqueado}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: bloqueado }}
+      style={({ pressed }) => [
+        styles.btnSecondary,
+        bloqueado && styles.btnDisabled,
+        pressed && !bloqueado && styles.pressedSoft,
+        style,
+      ]}
     >
-      <Text style={styles.btnSecondaryText}>{label}</Text>
+      {loading ? (
+        <View style={styles.btnLoadingRow}>
+          <ActivityIndicator color={colors.navy} size="small" />
+          <Text style={styles.btnSecondaryText}>{loadingLabel || 'Cargando...'}</Text>
+        </View>
+      ) : (
+        <Text style={styles.btnSecondaryText}>{label}</Text>
+      )}
     </Pressable>
   );
 }
 
 /** Chip: cápsula con borde; activa en teal. */
-export function Chip({ label, active = false, onPress }) {
+export function Chip({ label, active = false, onPress, disabled = false }) {
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ selected: active, disabled }}
       style={({ pressed }) => [
         styles.chip,
         active && styles.chipActive,
-        pressed && !active && styles.pressedSoft,
+        disabled && styles.btnDisabled,
+        pressed && !active && !disabled && styles.pressedSoft,
       ]}
     >
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
@@ -293,8 +333,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     minHeight: 48,
   },
+  inputWrapMultiline: { alignItems: 'flex-start', paddingVertical: 12 },
   inputInvalid: { borderColor: colors.error, backgroundColor: '#FDF3F1' },
-  inputText: { flex: 1, fontSize: 14, color: colors.navy },
+  inputDisabled: { backgroundColor: colors.panel, opacity: 0.75 },
+  inputText: { flex: 1, fontSize: 14, fontFamily: F.reg, color: colors.navy },
+  inputTextMultiline: { alignSelf: 'stretch' },
   checkboxRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   checkboxBox: {
     width: 21,

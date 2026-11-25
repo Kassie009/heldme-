@@ -19,9 +19,9 @@
  * El menú lateral se renderiza como overlay sobre la pantalla anterior.
  * Los botones de atrás funcionan y regresan a la pantalla anterior real.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import {
   useFonts,
@@ -46,8 +46,20 @@ import SinResultados from './src/screens/SinResultados';
 import PublicarNecesidad from './src/screens/PublicarNecesidad';
 import MisSolicitudes from './src/screens/MisSolicitudes';
 import CotizacionesRecibidas from './src/screens/CotizacionesRecibidas';
+import Conversaciones from './src/screens/Conversaciones';
 import Chat from './src/screens/Chat';
-import { colors, F } from './src/theme';
+import AcuerdosServicio from './src/screens/AcuerdosServicio';
+import Contrataciones from './src/screens/Contrataciones';
+import ContratacionDetalle from './src/screens/ContratacionDetalle';
+import DesglosePago from './src/screens/DesglosePago';
+import PagoNoAutorizado from './src/screens/PagoNoAutorizado';
+import TrabajoAdicional from './src/screens/TrabajoAdicional';
+import CodigoFinalizacion from './src/screens/CodigoFinalizacion';
+import CalificarServicio from './src/screens/CalificarServicio';
+import ReportarInasistencia from './src/screens/ReportarInasistencia';
+import CancelarContratacion from './src/screens/CancelarContratacion';
+import Cursos from './src/screens/Cursos';
+import { colors } from './src/theme';
 
 const pantallas = {
   tipo: TipoCuenta,
@@ -63,8 +75,22 @@ const pantallas = {
   publicar: PublicarNecesidad,
   misSolicitudes: MisSolicitudes,
   cotizaciones: CotizacionesRecibidas,
+  conversaciones: Conversaciones,
   chat: Chat,
+  acuerdosServicio: AcuerdosServicio,
+  contrataciones: Contrataciones,
+  contratacionDetalle: ContratacionDetalle,
+  desglosePago: DesglosePago,
+  pagoNoAutorizado: PagoNoAutorizado,
+  trabajoAdicional: TrabajoAdicional,
+  codigoFinalizacion: CodigoFinalizacion,
+  calificar: CalificarServicio,
+  reportarInasistencia: ReportarInasistencia,
+  cancelarContratacion: CancelarContratacion,
+  cursos: Cursos,
 };
+
+const SESION_INICIAL = { tipo: 'cliente', nombre: 'Aaron Félix' };
 
 export default function App() {
   const [fuentes] = useFonts({
@@ -75,13 +101,53 @@ export default function App() {
     PlusJakartaSans_800ExtraBold,
   });
   const [pila, setPila] = useState([{ s: 'tipo', params: {} }]);
+  const [sesion, setSesion] = useState(SESION_INICIAL);
+
+  useEffect(() => {
+    const suscripcion = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (pila.length > 1) {
+        setPila((p) => (p.length > 1 ? p.slice(0, -1) : p));
+        return true;
+      }
+      return false;
+    });
+    return () => suscripcion.remove();
+  }, [pila.length]);
 
   if (!fuentes) return null; // Espera a que cargue Plus Jakarta Sans
 
+  const actualizarSesion = (s, params = {}) => {
+    if (s === 'tipo') {
+      setSesion(SESION_INICIAL);
+      return SESION_INICIAL;
+    }
+    if (params?.tipo) {
+      const nueva = { tipo: params.tipo, nombre: params.nombre ?? sesion.nombre };
+      setSesion(nueva);
+      return nueva;
+    }
+    if ((s === 'buscar' || s === 'panelProfe') && params?.nombre) {
+      const nueva = { ...sesion, nombre: params.nombre };
+      setSesion(nueva);
+      return nueva;
+    }
+    return sesion;
+  };
+
   const nav = {
-    push: (s, params = {}) => setPila((p) => [...p, { s, params }]),
+    push: (s, params = {}) => {
+      actualizarSesion(s, params);
+      setPila((p) => [...p, { s, params }]);
+    },
     back: () => setPila((p) => (p.length > 1 ? p.slice(0, -1) : p)),
-    reset: (s, params = {}) => setPila([{ s, params }]),
+    reset: (s, params = {}) => {
+      const sesionActual = actualizarSesion(s, params);
+      const nextParams =
+        s === 'tipo' || s === 'iniciarSesion'
+          ? params
+          : { ...sesionActual, ...params };
+      setPila([{ s, params: nextParams }]);
+    },
     replace: (s, params = {}) =>
       setPila((p) => [...p.slice(0, -1), { s, params }]),
     openMenu: () =>
@@ -91,8 +157,30 @@ export default function App() {
         return [...p, { s: 'menu', params: p[p.length - 1].params }];
       }),
     // Abre una pantalla con un padre debajo para que el botón atrás funcione.
-    resetConPadre: (padre, destino, params = {}) =>
-      setPila([{ s: padre, params }, { s: destino, params }]),
+    resetConPadre: (padre, destino, params = {}) => {
+      const sesionActual = actualizarSesion(destino, params);
+      const nextParams = { ...sesionActual, ...params };
+      setPila([{ s: padre, params: nextParams }, { s: destino, params: nextParams }]);
+    },
+    volverAContrataciones: () =>
+      setPila([
+        { s: 'buscar', params: sesion },
+        { s: 'contrataciones', params: sesion },
+      ]),
+    irAContratacionDetalle: (params = {}) =>
+      setPila((p) => {
+        const idx = p.findIndex((x) => x.s === 'contratacionDetalle');
+        if (idx >= 0) return [...p.slice(0, idx), { s: 'contratacionDetalle', params }];
+        return [...p.slice(0, -1), { s: 'contratacionDetalle', params }];
+      }),
+    irACotizaciones: (params = {}) =>
+      setPila((p) => {
+        const idx = p.findIndex((x) => x.s === 'cotizaciones');
+        if (idx >= 0) {
+          return [...p.slice(0, idx), { s: 'cotizaciones', params: { ...p[idx].params, ...params } }];
+        }
+        return [...p, { s: 'cotizaciones', params }];
+      }),
   };
 
   const actual = pila[pila.length - 1];
@@ -107,7 +195,14 @@ export default function App() {
         <StatusBar style="dark" />
         <View style={styles.contenedor}>
           <PantallaFondo nav={nav} params={fondo.params} />
-          {actual.s === 'menu' && <MenuLateral nav={nav} params={actual.params} />}
+          {actual.s === 'menu' && (
+            <MenuLateral
+              nav={nav}
+              params={{ ...actual.params, ...sesion }}
+              sesion={sesion}
+              pantallaActual={fondo.s}
+            />
+          )}
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

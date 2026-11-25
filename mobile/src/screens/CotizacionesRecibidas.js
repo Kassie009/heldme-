@@ -4,7 +4,7 @@
  * El cliente compara propuestas desglosadas; al seleccionar una, las demás
  * dejan de estar disponibles para esa solicitud.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import { colors, radius, spacing, F } from '../theme';
 import {
@@ -42,16 +42,22 @@ const cotizaciones = [
   },
 ];
 
-export default function CotizacionesRecibidas({ nav }) {
+export default function CotizacionesRecibidas({ nav, params }) {
+  const servicio = params?.servicio || 'Reparación de fuga';
   const [seleccionada, setSeleccionada] = useState(null);
   const [cargandoChat, setCargandoChat] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content} bounces={false}>
       <TopBar onBack={nav.back} />
       <Text style={styles.titulo}>Cotizaciones recibidas</Text>
       <Text style={styles.sub} numberOfLines={1}>
-        Reparación de fuga · Col. Centro · SLRC
+        {servicio} · Col. Centro · SLRC
       </Text>
 
       {cotizaciones.map((c) => {
@@ -85,11 +91,33 @@ export default function CotizacionesRecibidas({ nav }) {
                   style={{ marginTop: spacing.md }}
                 />
                 {elegida && (
-                  <SecondaryButton
-                    label="Chatear con el profesionista"
-                    onPress={() => nav.push('chat')}
-                    style={{ marginTop: spacing.sm }}
-                  />
+                  <>
+                    <SecondaryButton
+                      label="Chatear con el profesionista"
+                      onPress={() =>
+                        nav.push('chat', {
+                          nombre: c.nombre,
+                          folio: 'HM-2044',
+                          servicio,
+                          estado: 'Contratado',
+                          tipoVinculo: 'contratacion',
+                        })
+                      }
+                      style={{ marginTop: spacing.sm }}
+                    />
+                    <TextLink
+                      onPress={() =>
+                        nav.push('acuerdosServicio', {
+                          folio: 'HM-2044',
+                          profesionista: c.nombre,
+                          titulo: servicio,
+                        })
+                      }
+                      style={{ alignSelf: 'center', marginTop: spacing.md }}
+                    >
+                      Continuar a acuerdos del servicio
+                    </TextLink>
+                  </>
                 )}
               </>
             ) : (
@@ -100,8 +128,15 @@ export default function CotizacionesRecibidas({ nav }) {
                 loadingLabel="Abriendo chat..."
                 onPress={() => {
                   setCargandoChat(true);
-                  setTimeout(() => {
-                    nav.push('chat');
+                  timerRef.current = setTimeout(() => {
+                    timerRef.current = null;
+                    nav.push('chat', {
+                      nombre: c.nombre,
+                      folio: 'SOL-109',
+                      servicio,
+                      estado: 'Cotización',
+                      tipoVinculo: 'cotizacion',
+                    });
                     setCargandoChat(false);
                   }, 700);
                 }}

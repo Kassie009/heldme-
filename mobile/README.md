@@ -13,7 +13,7 @@ npx expo start    # escanear QR con Expo Go, o tecla w para navegador
 Si Expo Go marca error de sesión ("signed in as..."): hacer `npx expo login` con la
 misma cuenta del teléfono, o cerrar sesión dentro de Expo Go.
 
-## Pantallas implementadas (1-13 del mockup, solo frontend)
+## Pantallas implementadas (1-26 del mockup, solo frontend)
 
 | # | Pantalla | Archivo |
 |---|---|---|
@@ -30,6 +30,19 @@ misma cuenta del teléfono, o cerrar sesión dentro de Expo Go.
 | 11 | Publicar necesidad (zona aproximada, sin GPS) | `src/screens/PublicarNecesidad.js` |
 | 12 | Mis solicitudes (activas/anteriores) | `src/screens/MisSolicitudes.js` |
 | 13 | Cotizaciones recibidas (comparar y seleccionar) | `src/screens/CotizacionesRecibidas.js` |
+| 14 | Conversaciones (lista de chats) | `src/screens/Conversaciones.js` |
+| 15 | Negociar por chat | `src/screens/Chat.js` |
+| 16 | Acuerdos de materiales | `src/screens/AcuerdosServicio.js` |
+| 17 | Contrataciones (activas, finalizadas, canceladas) | `src/screens/Contrataciones.js` |
+| 18 | Contratación y códigos (inicio, fin, pago de prueba) | `src/screens/ContratacionDetalle.js` |
+| 19 | Desglose del pago (plataforma, directo, comisión) | `src/screens/DesglosePago.js` |
+| 20 | Pago no autorizado (tarjeta de prueba y reintento) | `src/screens/PagoNoAutorizado.js` |
+| 21 | Trabajo adicional (versiones de cotización) | `src/screens/TrabajoAdicional.js` |
+| 22 | Código de finalización (vigencia 24 h) | `src/screens/CodigoFinalizacion.js` |
+| 23 | Calificar servicio (1 a 5 estrellas) | `src/screens/CalificarServicio.js` |
+| 24 | Reportar inasistencia (explicación y evidencias) | `src/screens/ReportarInasistencia.js` |
+| 25 | Cancelar contratación (regla 48 h) | `src/screens/CancelarContratacion.js` |
+| 26 | Cursos (catálogo y modalidades) | `src/screens/Cursos.js` |
 
 - Identidad visual: `src/theme.js` (manual: navy `#102044`, teal `#176B78`, lienzo `#F4F7F8`).
 - Componentes compartidos: `src/ui.js` (TopBar, botones, tarjetas, chips, menú).
@@ -46,8 +59,9 @@ misma cuenta del teléfono, o cerrar sesión dentro de Expo Go.
 - Sin referencias RF/ARQ en los textos visibles de la app (van en comentarios y commits).
 - Mientras el backend no esté listo, trabajar con datos simulados (mocks).
 
-## Pantallas pendientes (profesionista y flujos finales, mockup páginas 4-11)
+## Pantallas pendientes (cierre de cliente y flujo profesionista, mockup páginas 6-11)
 
-Contrataciones y pago, trabajo adicional y desglose, verificación (4 estados),
-servicios del profesionista, cotizar y negociar, servicio en curso (códigos),
-cursos del profesionista y perfil con sanciones.
+Inscripción y pago de curso, mi inscripción y baja, perfil del cliente con pagos de prueba,
+verificación profesional (4 estados), servicios del profesionista, solicitudes recibidas,
+calendario, cotizar y negociar, servicio en curso (códigos), cursos del profesionista
+y perfil con sanciones.
