@@ -4,7 +4,7 @@
  * Código único de un solo uso con vigencia de 24 horas para confirmar el
  * cierre del servicio y habilitar la calificación (RF-20, RN-08).
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, F } from '../theme';
@@ -13,13 +13,20 @@ import { Card, Label, PrimaryButton, TextLink, TopBar } from '../ui';
 export default function CodigoFinalizacion({ nav, params }) {
   const folio = params?.folio ?? 'HM-2044';
   const profesionista = params?.profesionista ?? 'Plomería Rivera';
+  const titulo = params?.titulo;
   const [validando, setValidando] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
 
   const continuarCalificacion = () => {
     setValidando(true);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       setValidando(false);
-      nav.push('calificar', { folio, profesionista });
+      nav.replace('calificar', { folio, profesionista, ...(titulo ? { titulo } : {}) });
     }, 650);
   };
 
@@ -62,8 +69,15 @@ export default function CodigoFinalizacion({ nav, params }) {
             onPress={continuarCalificacion}
           />
           <TextLink
-            onPress={() => nav.push('reportarInasistencia', { folio })}
-            style={styles.enlaceProblema}
+            onPress={() => {
+              if (validando) return;
+              nav.push('reportarInasistencia', {
+                folio,
+                profesionista,
+                ...(titulo ? { titulo } : {}),
+              });
+            }}
+            style={[styles.enlaceProblema, validando && { opacity: 0.45 }]}
           >
             Reportar un problema o inasistencia
           </TextLink>
@@ -84,6 +98,7 @@ const styles = StyleSheet.create({
   sub: {
     color: colors.textSec,
     fontSize: 13,
+    fontFamily: F.reg,
     lineHeight: 19,
     marginTop: 4,
     fontVariant: ['tabular-nums'],
@@ -100,6 +115,7 @@ const styles = StyleSheet.create({
     fontFamily: F.extra,
     color: colors.teal,
     letterSpacing: 10,
+    paddingLeft: 10,
     fontVariant: ['tabular-nums'],
     marginVertical: 6,
   },
@@ -125,12 +141,14 @@ const styles = StyleSheet.create({
   texto: {
     color: colors.textSec,
     fontSize: 13.5,
+    fontFamily: F.reg,
     lineHeight: 20,
     marginTop: spacing.xl,
   },
   textoSec: {
     color: colors.textSec,
     fontSize: 13,
+    fontFamily: F.reg,
     lineHeight: 19,
     marginTop: spacing.md,
   },

@@ -94,7 +94,9 @@ export default function Conversaciones({ nav }) {
                 <Text style={styles.nombre} numberOfLines={1}>
                   {item.nombre}
                 </Text>
-                <Badge label={item.etiqueta} tone="mint" />
+                <View style={styles.badgeWrap}>
+                  <Badge label={item.etiqueta} tone="mint" />
+                </View>
               </View>
               <View style={styles.mensajeRow}>
                 <Text style={styles.ultimoMensaje} numberOfLines={2}>
@@ -123,7 +125,7 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl * 2 },
   headerWrap: { marginBottom: spacing.md },
   titulo: { fontSize: 24, fontWeight: '800', fontFamily: F.extra, color: colors.navy },
-  sub: { color: colors.textSec, fontSize: 13, lineHeight: 19, marginTop: 4 },
+  sub: { color: colors.textSec, fontSize: 13, fontFamily: F.reg, lineHeight: 19, marginTop: 4 },
   chips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -135,17 +137,20 @@ const styles = StyleSheet.create({
   card: { paddingVertical: 14 },
   cardHeader: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 10,
+    gap: 8,
   },
   nombre: {
     flex: 1,
+    minWidth: 110,
     fontSize: 15,
     fontWeight: '800',
     fontFamily: F.extra,
     color: colors.navy,
   },
+  badgeWrap: { flexShrink: 1, maxWidth: '100%' },
   mensajeRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -153,7 +158,7 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 8,
   },
-  ultimoMensaje: { flex: 1, fontSize: 13, color: colors.textSec, lineHeight: 18 },
+  ultimoMensaje: { flex: 1, fontSize: 13, fontFamily: F.reg, color: colors.textSec, lineHeight: 18 },
   hora: {
     fontSize: 11.5,
     color: colors.textSec,
@@ -162,5 +167,5 @@ const styles = StyleSheet.create({
   },
   vacioCard: { alignItems: 'center', paddingVertical: spacing.xl },
   vacioTitulo: { fontSize: 15, fontWeight: '800', fontFamily: F.extra, color: colors.navy },
-  vacioTexto: { fontSize: 13, color: colors.textSec, marginTop: 4, textAlign: 'center' },
+  vacioTexto: { fontSize: 13, fontFamily: F.reg, color: colors.textSec, marginTop: 4, textAlign: 'center' },
 });

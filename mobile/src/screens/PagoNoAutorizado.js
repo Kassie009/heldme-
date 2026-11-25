@@ -4,7 +4,7 @@
  * Manejo de rechazo de preautorización en Stripe Test Mode y reintento sin
  * confirmar la contratación hasta que la tarjeta sea aprobada (RN-08, RNF-09).
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, F } from '../theme';
@@ -25,10 +25,19 @@ const formatTarjeta = (valor) => {
 
 export default function PagoNoAutorizado({ nav, params }) {
   const folio = params?.folio ?? 'HM-2044';
+  const titulo = params?.titulo ?? 'Reparación de fuga';
+  const profesionista = params?.profesionista ?? 'Plomería Rivera';
+  const monto = params?.monto ?? '$700.00';
+
   const [tarjeta, setTarjeta] = useState('4000 0000 0000 0002');
   const [error, setError] = useState('');
   const [aprobado, setAprobado] = useState(false);
   const [cargando, setCargando] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
 
   const reintentar = () => {
     const digitos = tarjeta.replace(/\D/g, '');
@@ -38,14 +47,30 @@ export default function PagoNoAutorizado({ nav, params }) {
     }
     setError('');
     setCargando(true);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       setCargando(false);
       if (digitos.endsWith('0002')) {
         setError('La tarjeta de prueba 0002 simula rechazo. Prueba con 4242 4242 4242 4242.');
         return;
       }
+      if (digitos !== '4242424242424242') {
+        setError(
+          'Tarjeta de prueba no autorizada. Usa 4242 4242 4242 4242 para simular la aprobación.',
+        );
+        return;
+      }
       setAprobado(true);
     }, 800);
+  };
+
+  const irAContratacion = () => {
+    const destinoParams = { folio, titulo, profesionista };
+    if (nav.irAContratacionDetalle) {
+      nav.irAContratacionDetalle(destinoParams);
+    } else {
+      nav.replace('contratacionDetalle', destinoParams);
+    }
   };
 
   return (
@@ -53,7 +78,7 @@ export default function PagoNoAutorizado({ nav, params }) {
       style={styles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <TopBar onBack={nav.back} />
+      <TopBar onBack={() => { if (!cargando) nav.back(); }} />
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
@@ -68,7 +93,7 @@ export default function PagoNoAutorizado({ nav, params }) {
           <View style={styles.okBox}>
             <View style={styles.bannerHeader}>
               <Ionicons name="checkmark-circle" size={18} color={colors.teal} />
-              <Text style={styles.okTitulo}>Preautorización aprobada por $700.00</Text>
+              <Text style={styles.okTitulo}>Preautorización aprobada por {monto}</Text>
             </View>
             <Text style={styles.okTexto}>
               Tu contratación quedó confirmada en Stripe Test Mode. El monto solo se captura al validar el código de finalización.
@@ -76,7 +101,7 @@ export default function PagoNoAutorizado({ nav, params }) {
           </View>
         ) : (
           <View style={styles.errorBox}>
-            <Text style={styles.errorTitulo}>No se pudo preautorizar $700.00</Text>
+            <Text style={styles.errorTitulo}>No se pudo preautorizar {monto}</Text>
             <Text style={styles.errorDetalle}>
               La contratación no se confirmó. No se realizó ningún cargo.
             </Text>
@@ -93,6 +118,7 @@ export default function PagoNoAutorizado({ nav, params }) {
             }}
             keyboard="number-pad"
             maxLength={19}
+            editable={!aprobado && !cargando}
             invalid={!!error}
             accessibilityLabel="Número de tarjeta de prueba"
           />
@@ -103,7 +129,7 @@ export default function PagoNoAutorizado({ nav, params }) {
           Simulación en Stripe Test Mode. Usa 4242 4242 4242 4242 para aprobar la retención de prueba.
         </Text>
 
-        {!aprobado ? (
+        {!aprobado && !cargando ? (
           <TextLink
             onPress={() => {
               setTarjeta('4242 4242 4242 4242');
@@ -116,19 +142,21 @@ export default function PagoNoAutorizado({ nav, params }) {
         ) : null}
 
         <View style={styles.acciones}>
-          <SecondaryButton label="Volver a la cotización" onPress={nav.back} />
           {aprobado ? (
             <PrimaryButton
               label="Ir a la contratación"
-              onPress={() => nav.replace('contratacionDetalle', { folio })}
+              onPress={irAContratacion}
             />
           ) : (
-            <PrimaryButton
-              label="Reintentar con otra tarjeta"
-              loading={cargando}
-              loadingLabel="Preautorizando..."
-              onPress={reintentar}
-            />
+            <>
+              <SecondaryButton label="Volver" onPress={nav.back} disabled={cargando} />
+              <PrimaryButton
+                label="Reintentar con otra tarjeta"
+                loading={cargando}
+                loadingLabel="Preautorizando..."
+                onPress={reintentar}
+              />
+            </>
           )}
         </View>
       </ScrollView>
@@ -147,6 +175,7 @@ const styles = StyleSheet.create({
   sub: {
     color: colors.textSec,
     fontSize: 13,
+    fontFamily: F.reg,
     marginTop: 4,
     fontVariant: ['tabular-nums'],
   },
@@ -168,6 +197,7 @@ const styles = StyleSheet.create({
   },
   errorDetalle: {
     fontSize: 13,
+    fontFamily: F.reg,
     color: colors.navy,
     lineHeight: 19,
     marginTop: 4,
@@ -190,9 +220,10 @@ const styles = StyleSheet.create({
     color: colors.teal,
     fontVariant: ['tabular-nums'],
   },
-  okTexto: { fontSize: 13, color: colors.navy, lineHeight: 19, marginTop: 6 },
+  okTexto: { fontSize: 13, fontFamily: F.reg, color: colors.navy, lineHeight: 19, marginTop: 6 },
   ayuda: {
     fontSize: 12,
+    fontFamily: F.reg,
     color: colors.textSec,
     lineHeight: 17,
     fontVariant: ['tabular-nums'],

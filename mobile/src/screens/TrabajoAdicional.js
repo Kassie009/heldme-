@@ -4,22 +4,31 @@
  * Muestra la versión 1 aceptada sin cambios (RNF-07) y solicita autorización
  * explícita del cliente antes de preautorizar y ejecutar el adicional (RF-16, RN-07).
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, F } from '../theme';
 import { Card, Label, PrimaryButton, SecondaryButton, TopBar } from '../ui';
 
 export default function TrabajoAdicional({ nav, params }) {
+  const folio = params?.folio ?? 'HM-2044';
   const profesionista = params?.profesionista ?? 'Plomería Rivera';
+  const titulo = params?.titulo;
+
   const [decision, setDecision] = useState('pendiente'); // 'pendiente' | 'aceptado' | 'rechazado'
-  const [cargando, setCargando] = useState(false);
+  const [accionCargando, setAccionCargando] = useState(null); // null | 'aceptada' | 'rechazada'
+  const timerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
 
   const decidir = (tipo) => {
-    setCargando(true);
-    setTimeout(() => {
+    setAccionCargando(tipo === 'aceptado' ? 'aceptada' : 'rechazada');
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       setDecision(tipo);
-      setCargando(false);
+      setAccionCargando(null);
     }, 700);
   };
 
@@ -28,7 +37,10 @@ export default function TrabajoAdicional({ nav, params }) {
       <TopBar onBack={nav.back} />
       <ScrollView contentContainerStyle={styles.content} bounces={false}>
         <Text style={styles.titulo}>Trabajo adicional</Text>
-        <Text style={styles.sub}>{profesionista} propone una nueva versión</Text>
+        <Text style={styles.sub}>
+          {folio}
+          {titulo ? ` · ${titulo}` : ''} · {profesionista} propone una nueva versión
+        </Text>
 
         {/* Versión original conservada */}
         <Card style={styles.v1Card}>
@@ -87,13 +99,16 @@ export default function TrabajoAdicional({ nav, params }) {
           <View style={styles.acciones}>
             <SecondaryButton
               label="Rechazar"
-              disabled={cargando}
+              loading={accionCargando === 'rechazada'}
+              loadingLabel="Rechazando..."
+              disabled={accionCargando !== null}
               onPress={() => decidir('rechazado')}
             />
             <PrimaryButton
               label="Aceptar adicional"
-              loading={cargando}
+              loading={accionCargando === 'aceptada'}
               loadingLabel="Preautorizando adicional..."
+              disabled={accionCargando !== null}
               onPress={() => decidir('aceptado')}
             />
           </View>
@@ -111,7 +126,14 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl * 2,
   },
   titulo: { fontSize: 24, fontWeight: '800', fontFamily: F.extra, color: colors.navy },
-  sub: { color: colors.textSec, fontSize: 13, marginTop: 4 },
+  sub: {
+    color: colors.textSec,
+    fontSize: 13,
+    fontFamily: F.reg,
+    lineHeight: 19,
+    marginTop: 4,
+    fontVariant: ['tabular-nums'],
+  },
   v1Card: { marginTop: spacing.lg },
   v2Card: { marginTop: spacing.md },
   fila: {
@@ -121,7 +143,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     gap: 12,
   },
-  concepto: { flex: 1, fontSize: 14, color: colors.navy },
+  concepto: { flex: 1, fontSize: 14, fontFamily: F.reg, color: colors.navy },
   monto: {
     fontSize: 14.5,
     fontWeight: '700',
@@ -129,7 +151,7 @@ const styles = StyleSheet.create({
     color: colors.navy,
     fontVariant: ['tabular-nums'],
   },
-  notaV1: { fontSize: 12.5, color: colors.textSec, marginTop: 6 },
+  notaV1: { fontSize: 12.5, fontFamily: F.reg, color: colors.textSec, marginTop: 6 },
   filaTotal: {
     borderTopWidth: 1,
     borderTopColor: colors.border,
@@ -144,7 +166,7 @@ const styles = StyleSheet.create({
     color: colors.navy,
     fontVariant: ['tabular-nums'],
   },
-  notaV2: { fontSize: 12.5, color: colors.textSec, lineHeight: 18, marginTop: 8 },
+  notaV2: { fontSize: 12.5, fontFamily: F.reg, color: colors.textSec, lineHeight: 18, marginTop: 8 },
   estadoOk: {
     marginTop: spacing.lg,
     backgroundColor: '#EBF4F6',
@@ -166,6 +188,7 @@ const styles = StyleSheet.create({
   estadoTituloRechazo: { fontSize: 15, fontWeight: '800', fontFamily: F.extra, color: colors.warnText },
   estadoTexto: {
     fontSize: 13,
+    fontFamily: F.reg,
     color: colors.navy,
     lineHeight: 19,
     marginTop: 6,

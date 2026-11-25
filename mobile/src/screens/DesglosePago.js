@@ -12,6 +12,9 @@ import { Card, Label, SecondaryButton, TopBar } from '../ui';
 
 export default function DesglosePago({ nav, params }) {
   const folio = params?.folio ?? 'HM-2044';
+  const profesionista = params?.profesionista ?? 'Plomería Rivera';
+  const titulo = params?.titulo ?? 'Reparación de fuga';
+  const comprador = params?.comprador ?? 'cliente';
   const [verTicket, setVerTicket] = useState(false);
 
   return (
@@ -50,7 +53,11 @@ export default function DesglosePago({ nav, params }) {
           <View style={[styles.seccion, styles.divisor]}>
             <Label>FUERA DE HELDME!</Label>
             <View style={styles.fila}>
-              <Text style={styles.concepto}>Materiales de compra directa</Text>
+              <Text style={styles.concepto}>
+                {comprador === 'profesionista'
+                  ? 'Materiales (con comprobante)'
+                  : 'Materiales de compra directa'}
+              </Text>
               <Text style={styles.monto}>$1,000.00</Text>
             </View>
             <View style={styles.fila}>
@@ -70,7 +77,7 @@ export default function DesglosePago({ nav, params }) {
               <View style={styles.ticketPanel}>
                 <Text style={styles.ticketTitulo}>Ferretería El Centro · Ticket #4192</Text>
                 <Text style={styles.ticketDetalle}>
-                  Tubería de cobre 1/2&quot;, codos y conexiones · 22 nov 2026
+                  Tubería de cobre 1/2&quot;, codos y conexiones · 24 nov 2026
                 </Text>
                 <Text style={styles.ticketMonto}>Total en ticket: $1,000.00 (exento de comisión)</Text>
               </View>
@@ -79,7 +86,13 @@ export default function DesglosePago({ nav, params }) {
 
           <View style={[styles.seccion, styles.divisor]}>
             <View style={styles.fila}>
-              <Text style={styles.concepto}>Comisión HeldMe! (10% de $700.00)</Text>
+              <Text style={styles.totalLabel}>Total acordado</Text>
+              <Text style={styles.totalValor}>$1,700.00</Text>
+            </View>
+            <View style={styles.fila}>
+              <Text style={styles.concepto}>
+                Comisión HeldMe! (10% · a cargo del profesionista)
+              </Text>
               <Text style={styles.monto}>$70.00</Text>
             </View>
             <View style={styles.fila}>
@@ -95,7 +108,15 @@ export default function DesglosePago({ nav, params }) {
 
         <SecondaryButton
           label="Simular fallo de tarjeta de prueba"
-          onPress={() => nav.push('pagoNoAutorizado', { folio })}
+          onPress={() =>
+            nav.push('pagoNoAutorizado', {
+              folio,
+              profesionista,
+              titulo,
+              monto: '$700.00',
+              origen: 'desglose',
+            })
+          }
           style={{ marginTop: spacing.xl }}
         />
       </ScrollView>
@@ -110,6 +131,7 @@ const styles = StyleSheet.create({
   sub: {
     color: colors.textSec,
     fontSize: 13,
+    fontFamily: F.reg,
     marginTop: 4,
     fontVariant: ['tabular-nums'],
   },
@@ -123,7 +145,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     gap: 12,
   },
-  concepto: { flex: 1, fontSize: 13.5, color: colors.navy, lineHeight: 19 },
+  concepto: { flex: 1, fontSize: 13.5, fontFamily: F.reg, color: colors.navy, lineHeight: 19 },
   monto: {
     fontSize: 13.5,
     fontWeight: '600',
@@ -161,7 +183,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   ticketTitulo: { fontSize: 13, fontWeight: '700', fontFamily: F.bold, color: colors.navy },
-  ticketDetalle: { fontSize: 12, color: colors.textSec, marginTop: 3 },
+  ticketDetalle: { fontSize: 12, fontFamily: F.reg, color: colors.textSec, marginTop: 3 },
   ticketMonto: {
     fontSize: 12,
     fontWeight: '600',
@@ -173,6 +195,7 @@ const styles = StyleSheet.create({
   nota: {
     color: colors.textSec,
     fontSize: 12.5,
+    fontFamily: F.reg,
     lineHeight: 18,
     marginTop: spacing.lg,
   },

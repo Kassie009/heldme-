@@ -4,7 +4,7 @@
  * Preguntas predefinidas sobre compra/pago de materiales y gastos adicionales,
  * con confirmación explícita de ambas partes antes de iniciar (RF-32, RF-33).
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, F } from '../theme';
@@ -13,10 +13,16 @@ import { Badge, Card, Chip, Label, PrimaryButton, TopBar } from '../ui';
 export default function AcuerdosServicio({ nav, params }) {
   const folio = params?.folio ?? 'HM-2044';
   const profesionista = params?.profesionista ?? 'Plomería Rivera';
+  const titulo = params?.titulo;
 
-  const [comprador, setComprador] = useState('cliente');
-  const [confirmadoCliente, setConfirmadoCliente] = useState(false);
+  const [comprador, setComprador] = useState(params?.comprador || 'cliente');
+  const [confirmadoCliente, setConfirmadoCliente] = useState(Boolean(params?.confirmado));
   const [cargando, setCargando] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
 
   const textoPago =
     comprador === 'cliente'
@@ -25,11 +31,28 @@ export default function AcuerdosServicio({ nav, params }) {
 
   const confirmar = () => {
     setCargando(true);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       setConfirmadoCliente(true);
       setCargando(false);
     }, 650);
   };
+
+  const abrirContratacion = () => {
+    const destinoParams = {
+      folio,
+      profesionista,
+      ...(titulo ? { titulo } : {}),
+      comprador,
+    };
+    if (nav.irAContratacionDetalle) {
+      nav.irAContratacionDetalle(destinoParams);
+    } else {
+      nav.push('contratacionDetalle', destinoParams);
+    }
+  };
+
+  const pendienteAjuste = !confirmadoCliente && comprador === 'profesionista';
 
   return (
     <View style={styles.screen}>
@@ -46,16 +69,21 @@ export default function AcuerdosServicio({ nav, params }) {
               <Chip
                 label="Cliente"
                 active={comprador === 'cliente'}
-                disabled={confirmadoCliente}
+                disabled={confirmadoCliente || cargando}
                 onPress={() => setComprador('cliente')}
               />
               <Chip
                 label="Profesionista"
                 active={comprador === 'profesionista'}
-                disabled={confirmadoCliente}
+                disabled={confirmadoCliente || cargando}
                 onPress={() => setComprador('profesionista')}
               />
             </View>
+            {pendienteAjuste ? (
+              <Text style={styles.notaCambio}>
+                Al confirmar, compartiremos esta selección con {profesionista} para quedar registrada en el acuerdo.
+              </Text>
+            ) : null}
           </View>
 
           <View style={[styles.preguntaBlock, styles.divisor]}>
@@ -74,15 +102,18 @@ export default function AcuerdosServicio({ nav, params }) {
         {/* Estado de confirmación de ambas partes */}
         <Card style={styles.confirmCard}>
           <View style={styles.confirmRow}>
-            <Text style={styles.parte}>Tú</Text>
+            <Text style={styles.parte} numberOfLines={1}>Tú</Text>
             <Badge
-              label={confirmadoCliente ? 'Confirmó' : 'Pendiente'}
+              label={confirmadoCliente ? 'Confirmaste' : 'Pendiente'}
               tone={confirmadoCliente ? 'teal' : 'warn'}
             />
           </View>
           <View style={[styles.confirmRow, styles.divisor]}>
-            <Text style={styles.parte}>{profesionista}</Text>
-            <Badge label="Confirmó" tone="mint" />
+            <Text style={styles.parte} numberOfLines={1}>{profesionista}</Text>
+            <Badge
+              label={pendienteAjuste ? 'Por confirmar' : 'Confirmó'}
+              tone={pendienteAjuste ? 'warn' : 'mint'}
+            />
           </View>
         </Card>
 
@@ -96,7 +127,7 @@ export default function AcuerdosServicio({ nav, params }) {
             </View>
             <PrimaryButton
               label="Ver contratación y código de inicio"
-              onPress={() => nav.push('contratacionDetalle', { folio, profesionista })}
+              onPress={abrirContratacion}
               style={{ marginTop: spacing.lg }}
             />
           </>
@@ -121,6 +152,7 @@ const styles = StyleSheet.create({
   sub: {
     color: colors.textSec,
     fontSize: 13,
+    fontFamily: F.reg,
     marginTop: 4,
     fontVariant: ['tabular-nums'],
   },
@@ -128,6 +160,13 @@ const styles = StyleSheet.create({
   preguntaBlock: { paddingVertical: 12 },
   divisor: { borderTopWidth: 1, borderTopColor: colors.border },
   chips: { flexDirection: 'row', gap: spacing.sm, marginTop: 4 },
+  notaCambio: {
+    fontSize: 12,
+    fontFamily: F.reg,
+    color: colors.textSec,
+    lineHeight: 17,
+    marginTop: spacing.sm,
+  },
   respuesta: {
     fontSize: 14.5,
     fontWeight: '700',
@@ -142,7 +181,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 12,
   },
-  parte: { fontSize: 14, fontWeight: '700', fontFamily: F.bold, color: colors.navy },
+  parte: {
+    flex: 1,
+    marginRight: 8,
+    fontSize: 14,
+    fontWeight: '700',
+    fontFamily: F.bold,
+    color: colors.navy,
+  },
   avisoOk: {
     flexDirection: 'row',
     alignItems: 'flex-start',

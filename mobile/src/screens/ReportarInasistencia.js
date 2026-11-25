@@ -4,7 +4,7 @@
  * Conserva explicación y evidencias para revisión administrativa previa a
  * confirmar cualquier falta o strike (RF-30, RN-09, RNF-12).
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -29,7 +29,7 @@ import {
   TopBar,
 } from '../ui';
 
-function ListaFotosHorizontal({ fotos, alQuitar }) {
+function ListaFotosHorizontal({ fotos, alQuitar, bloqueado = false }) {
   if (fotos.length === 0) return null;
   return (
     <ScrollView
@@ -37,20 +37,26 @@ function ListaFotosHorizontal({ fotos, alQuitar }) {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.miniaturasRow}
     >
-      {fotos.map((uri) => (
-        <Pressable
-          key={uri}
-          onPress={() => alQuitar(uri)}
-          hitSlop={6}
-          accessibilityRole="button"
-          accessibilityLabel="Quitar fotografía adjunta"
-        >
-          <Image source={{ uri }} style={styles.miniatura} />
-          <View style={styles.miniaturaX}>
-            <Ionicons name="close" size={12} color={colors.white} />
+      {fotos.map((uri) =>
+        bloqueado ? (
+          <View key={uri}>
+            <Image source={{ uri }} style={styles.miniatura} />
           </View>
-        </Pressable>
-      ))}
+        ) : (
+          <Pressable
+            key={uri}
+            onPress={() => alQuitar(uri)}
+            hitSlop={6}
+            accessibilityRole="button"
+            accessibilityLabel="Quitar fotografía adjunta"
+          >
+            <Image source={{ uri }} style={styles.miniatura} />
+            <View style={styles.miniaturaX}>
+              <Ionicons name="close" size={12} color={colors.white} />
+            </View>
+          </Pressable>
+        ),
+      )}
     </ScrollView>
   );
 }
@@ -69,31 +75,66 @@ export default function ReportarInasistencia({ nav, params }) {
   const [errorTexto, setErrorTexto] = useState('');
   const [cargando, setCargando] = useState(false);
   const [enviado, setEnviado] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
 
   const adjuntar = async () => {
+    if (enviado || cargando || fotos.length >= 3) return;
     setAvisoArchivo('');
-    const resultado = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsMultipleSelection: true,
-      selectionLimit: 3 - fotos.length,
-      quality: 0.8,
-    });
-    if (resultado.canceled) return;
+    try {
+      const permiso = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permiso.granted) {
+        setAvisoArchivo('Necesitas otorgar permiso a tu galería para adjuntar fotografías.');
+        return;
+      }
 
-    for (const asset of resultado.assets) {
-      const tipoOk = /\/(jpeg|jpg|png|webp)$/i.test(
-        asset.mimeType || asset.uri.split('.').pop() || '',
-      );
-      const megaBytes = (asset.fileSize || 0) / (1024 * 1024);
-      if (!tipoOk) {
-        setAvisoArchivo('Solo se permiten imágenes JPG, PNG o WebP.');
-        continue;
+      const resultado = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsMultipleSelection: true,
+        selectionLimit: 3 - fotos.length,
+        quality: 0.8,
+      });
+      if (resultado.canceled) return;
+
+      const assets = resultado.assets || [];
+      const nuevas = [];
+      for (const asset of assets) {
+        if (!asset?.uri) continue;
+        const mimeOk = asset.mimeType ? /^image\/(jpeg|jpg|png|webp)$/i.test(asset.mimeType) : false;
+        const nombreLimpio = (asset.fileName || asset.uri || '').split('?')[0];
+        const extOk = /\.(jpe?g|png|webp)$/i.test(nombreLimpio);
+        const tipoOk = asset.mimeType ? mimeOk : extOk;
+        const megaBytes = (asset.fileSize || 0) / (1024 * 1024);
+
+        if (!tipoOk) {
+          setAvisoArchivo('Solo se permiten imágenes JPG, PNG o WebP.');
+          continue;
+        }
+        if (megaBytes > 5) {
+          setAvisoArchivo(`"${asset.fileName || 'Imagen'}" supera el máximo de 5 MB.`);
+          continue;
+        }
+        if (!fotos.includes(asset.uri) && !nuevas.includes(asset.uri)) {
+          nuevas.push(asset.uri);
+        }
       }
-      if (megaBytes > 5) {
-        setAvisoArchivo(`"${asset.fileName || 'Imagen'}" supera el máximo de 5 MB.`);
-        continue;
+
+      if (nuevas.length > 0) {
+        setFotos((prev) => {
+          const combinadas = [...prev];
+          for (const uri of nuevas) {
+            if (!combinadas.includes(uri) && combinadas.length < 3) {
+              combinadas.push(uri);
+            }
+          }
+          return combinadas;
+        });
       }
-      setFotos((prev) => (prev.length < 3 ? [...prev, asset.uri] : prev));
+    } catch {
+      setAvisoArchivo('No se pudo abrir la galería. Inténtalo de nuevo.');
     }
   };
 
@@ -104,7 +145,8 @@ export default function ReportarInasistencia({ nav, params }) {
     }
     setErrorTexto('');
     setCargando(true);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       setCargando(false);
       setEnviado(true);
     }, 700);
@@ -117,7 +159,11 @@ export default function ReportarInasistencia({ nav, params }) {
       style={styles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <TopBar onBack={nav.back} />
+      <TopBar
+        onBack={
+          enviado ? () => nav.resetConPadre('buscar', 'contrataciones') : nav.back
+        }
+      />
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
@@ -138,6 +184,7 @@ export default function ReportarInasistencia({ nav, params }) {
                 setErrorTexto('');
               }}
               multiline
+              editable={!enviado && !cargando}
               invalid={!!errorTexto}
               style={styles.textarea}
               accessibilityLabel="Descripción de la inasistencia"
@@ -159,6 +206,9 @@ export default function ReportarInasistencia({ nav, params }) {
               onPress={() => setAbiertaChat((v) => !v)}
               hitSlop={10}
               accessibilityRole="button"
+              accessibilityLabel={
+                abiertaChat ? 'Ocultar evidencia de conversación' : 'Ver evidencia de conversación'
+              }
               style={styles.verBtn}
             >
               <Text style={styles.verTexto}>{abiertaChat ? 'Ocultar' : 'Ver'}</Text>
@@ -178,6 +228,9 @@ export default function ReportarInasistencia({ nav, params }) {
               onPress={() => setAbiertaCita((v) => !v)}
               hitSlop={10}
               accessibilityRole="button"
+              accessibilityLabel={
+                abiertaCita ? 'Ocultar evidencia de cita confirmada' : 'Ver evidencia de cita confirmada'
+              }
               style={styles.verBtn}
             >
               <Text style={styles.verTexto}>{abiertaCita ? 'Ocultar' : 'Ver'}</Text>
@@ -193,6 +246,7 @@ export default function ReportarInasistencia({ nav, params }) {
 
           <ListaFotosHorizontal
             fotos={fotos}
+            bloqueado={enviado || cargando}
             alQuitar={(uri) => setFotos((prev) => prev.filter((x) => x !== uri))}
           />
 
@@ -200,13 +254,14 @@ export default function ReportarInasistencia({ nav, params }) {
             <View style={styles.adjuntarWrap}>
               <Pressable
                 onPress={adjuntar}
-                disabled={fotos.length >= 3}
+                disabled={cargando || fotos.length >= 3}
                 accessibilityRole="button"
                 accessibilityLabel="Adjuntar fotografía adicional"
+                accessibilityState={{ disabled: cargando || fotos.length >= 3 }}
                 style={({ pressed }) => [
                   styles.adjuntarBtn,
-                  pressed && { backgroundColor: colors.mint },
-                  fotos.length >= 3 && { opacity: 0.5 },
+                  pressed && !cargando && fotos.length < 3 && { backgroundColor: colors.mint },
+                  (cargando || fotos.length >= 3) && { opacity: 0.5 },
                 ]}
               >
                 <Ionicons name="image-outline" size={18} color={colors.teal} />
@@ -265,6 +320,7 @@ const styles = StyleSheet.create({
   sub: {
     color: colors.textSec,
     fontSize: 13,
+    fontFamily: F.reg,
     marginTop: 4,
     fontVariant: ['tabular-nums'],
   },
@@ -288,6 +344,7 @@ const styles = StyleSheet.create({
   evidenciaNombre: {
     flex: 1,
     fontSize: 13.5,
+    fontFamily: F.reg,
     color: colors.navy,
     fontVariant: ['tabular-nums'],
   },
@@ -299,8 +356,8 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     marginBottom: spacing.sm,
   },
-  detalleTexto: { fontSize: 12, color: colors.textSec, lineHeight: 17 },
-  miniaturasRow: { gap: 8, paddingTop: spacing.sm, paddingBottom: 4 },
+  detalleTexto: { fontSize: 12, fontFamily: F.reg, color: colors.textSec, lineHeight: 17 },
+  miniaturasRow: { gap: 8, paddingTop: spacing.sm, paddingBottom: 4, paddingRight: 8 },
   miniatura: { width: 58, height: 58, borderRadius: 10 },
   miniaturaX: {
     position: 'absolute',
@@ -338,6 +395,7 @@ const styles = StyleSheet.create({
   },
   adjuntarAyuda: {
     fontSize: 11.5,
+    fontFamily: F.reg,
     color: colors.textSec,
     textAlign: 'center',
     marginTop: 6,
@@ -349,7 +407,7 @@ const styles = StyleSheet.create({
     fontFamily: F.semi,
     marginTop: 6,
   },
-  nota: { color: colors.textSec, fontSize: 12.5, lineHeight: 18, marginTop: spacing.md },
+  nota: { color: colors.textSec, fontSize: 12.5, fontFamily: F.reg, lineHeight: 18, marginTop: spacing.md },
   okBox: {
     marginTop: spacing.lg,
     backgroundColor: '#EBF4F6',
@@ -360,6 +418,6 @@ const styles = StyleSheet.create({
   },
   okHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   okTitulo: { fontSize: 15, fontWeight: '800', fontFamily: F.extra, color: colors.teal },
-  okTexto: { fontSize: 13, color: colors.navy, lineHeight: 19, marginTop: 6 },
+  okTexto: { fontSize: 13, fontFamily: F.reg, color: colors.navy, lineHeight: 19, marginTop: 6 },
   acciones: { marginTop: 'auto', paddingTop: spacing.xl },
 });

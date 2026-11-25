@@ -14,13 +14,14 @@ export default function ContratacionDetalle({ nav, params }) {
   const folio = params?.folio ?? 'HM-2044';
   const titulo = params?.titulo ?? 'Reparación de fuga';
   const profesionista = params?.profesionista ?? 'Plomería Rivera';
+  const comprador = params?.comprador ?? 'cliente';
 
   return (
     <View style={styles.screen}>
       <TopBar onBack={nav.back} />
       <ScrollView contentContainerStyle={styles.content} bounces={false}>
         <View style={styles.headerRow}>
-          <Text style={styles.titulo} numberOfLines={1}>
+          <Text style={styles.titulo} numberOfLines={2}>
             {titulo}
           </Text>
           <Badge label="Contratado" tone="mint" />
@@ -50,7 +51,7 @@ export default function ContratacionDetalle({ nav, params }) {
             Se genera cuando el profesional marque el servicio como realizado. Vigencia de 24 horas, un solo uso.
           </Text>
           <Pressable
-            onPress={() => nav.push('codigoFinalizacion', { folio, profesionista })}
+            onPress={() => nav.push('codigoFinalizacion', { folio, profesionista, titulo })}
             accessibilityRole="button"
             style={({ pressed }) => [styles.linkRow, pressed && styles.rowPressed]}
           >
@@ -71,7 +72,11 @@ export default function ContratacionDetalle({ nav, params }) {
             <Text style={styles.filaValor}>$1,700.00</Text>
           </View>
           <View style={styles.fila}>
-            <Text style={styles.filaConcepto}>Materiales directos · fuera de HeldMe!</Text>
+            <Text style={styles.filaConcepto}>
+              {comprador === 'profesionista'
+                ? 'Materiales (con comprobante)'
+                : 'Materiales directos · fuera de HeldMe!'}
+            </Text>
             <Text style={styles.filaValor}>$1,000.00</Text>
           </View>
           <View style={[styles.fila, styles.filaTotal]}>
@@ -84,7 +89,7 @@ export default function ContratacionDetalle({ nav, params }) {
           </Text>
 
           <Pressable
-            onPress={() => nav.push('desglosePago', { folio })}
+            onPress={() => nav.push('desglosePago', { folio, profesionista, titulo, comprador })}
             accessibilityRole="button"
             style={({ pressed }) => [styles.linkRow, pressed && styles.rowPressed]}
           >
@@ -95,7 +100,16 @@ export default function ContratacionDetalle({ nav, params }) {
 
         {/* Acuerdos */}
         <Pressable
-          onPress={() => nav.push('acuerdosServicio', { folio, profesionista })}
+          onPress={() =>
+            nav.push('acuerdosServicio', {
+              folio,
+              profesionista,
+              titulo,
+              confirmado: true,
+              desdeDetalle: true,
+              comprador,
+            })
+          }
           accessibilityRole="button"
           style={({ pressed }) => [pressed && { opacity: 0.85 }]}
         >
@@ -108,7 +122,7 @@ export default function ContratacionDetalle({ nav, params }) {
         {/* Acciones operativas de la contratación en un solo grupo con divisores */}
         <Card style={styles.accionesCard}>
           <Pressable
-            onPress={() => nav.push('trabajoAdicional', { folio, profesionista })}
+            onPress={() => nav.push('trabajoAdicional', { folio, profesionista, titulo })}
             accessibilityRole="button"
             style={({ pressed }) => [styles.accionRow, pressed && styles.rowPressed]}
           >
@@ -134,7 +148,7 @@ export default function ContratacionDetalle({ nav, params }) {
           </Pressable>
 
           <Pressable
-            onPress={() => nav.push('reportarInasistencia', { folio: 'HM-2048' })}
+            onPress={() => nav.push('reportarInasistencia', { folio, profesionista, titulo })}
             accessibilityRole="button"
             style={({ pressed }) => [styles.accionRow, styles.divisor, pressed && styles.rowPressed]}
           >
@@ -143,7 +157,7 @@ export default function ContratacionDetalle({ nav, params }) {
           </Pressable>
 
           <Pressable
-            onPress={() => nav.push('cancelarContratacion', { folio, titulo })}
+            onPress={() => nav.push('cancelarContratacion', { folio, profesionista, titulo })}
             accessibilityRole="button"
             style={({ pressed }) => [styles.accionRow, styles.divisor, pressed && styles.rowPressed]}
           >
@@ -171,6 +185,7 @@ const styles = StyleSheet.create({
   sub: {
     color: colors.textSec,
     fontSize: 13,
+    fontFamily: F.reg,
     marginTop: 3,
     fontVariant: ['tabular-nums'],
   },
@@ -182,18 +197,20 @@ const styles = StyleSheet.create({
     fontFamily: F.extra,
     color: colors.teal,
     letterSpacing: 10,
+    paddingLeft: 10,
     fontVariant: ['tabular-nums'],
     marginVertical: 4,
   },
   codigoAyuda: {
     fontSize: 12.5,
+    fontFamily: F.reg,
     color: colors.textSec,
     textAlign: 'center',
     lineHeight: 18,
     marginTop: 8,
   },
   card: { marginTop: spacing.md },
-  texto: { fontSize: 13, color: colors.textSec, lineHeight: 19 },
+  texto: { fontSize: 13, fontFamily: F.reg, color: colors.textSec, lineHeight: 19 },
   pagoHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -207,7 +224,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     gap: 12,
   },
-  filaConcepto: { flex: 1, fontSize: 13, color: colors.navy },
+  filaConcepto: { flex: 1, fontSize: 13, fontFamily: F.reg, color: colors.navy },
   filaValor: {
     fontSize: 13.5,
     fontWeight: '600',
@@ -231,6 +248,7 @@ const styles = StyleSheet.create({
   },
   pagoNota: {
     fontSize: 12,
+    fontFamily: F.reg,
     color: colors.textSec,
     lineHeight: 17,
     marginTop: spacing.sm,
@@ -263,6 +281,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   divisor: { borderTopWidth: 1, borderTopColor: colors.border },
-  accionTexto: { fontSize: 14, fontWeight: '600', fontFamily: F.semi, color: colors.navy },
+  accionTexto: {
+    flex: 1,
+    marginRight: 8,
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: F.semi,
+    color: colors.navy,
+  },
   rowPressed: { opacity: 0.7 },
 });

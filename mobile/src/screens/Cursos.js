@@ -95,9 +95,8 @@ export default function Cursos({ nav }) {
 
               <View style={styles.pieRow}>
                 <Text style={styles.precio}>{item.precio}</Text>
-                {item.cupoLleno ? (
-                  <Badge label="Cupo lleno" tone="warn" />
-                ) : (
+                <View style={styles.pieAcciones}>
+                  {item.cupoLleno ? <Badge label="Cupo lleno" tone="warn" /> : null}
                   <Pressable
                     onPress={() => alternarDetalle(item.id)}
                     accessibilityRole="button"
@@ -110,19 +109,28 @@ export default function Cursos({ nav }) {
                     ]}
                   >
                     <Text style={styles.verCursoTexto}>
-                      {abierto ? 'Ocultar detalle' : 'Ver curso'}
+                      {abierto ? 'Ocultar' : 'Ver curso'}
                     </Text>
                   </Pressable>
-                )}
+                </View>
               </View>
 
               {abierto ? (
                 <View style={styles.detallePanel}>
                   <Text style={styles.detalleLinea}>{item.lugar}</Text>
-                  <Text style={styles.detalleCupo}>{item.disponibles}</Text>
+                  <Text
+                    style={[
+                      styles.detalleCupo,
+                      item.cupoLleno && styles.detalleCupoLleno,
+                    ]}
+                  >
+                    {item.disponibles}
+                  </Text>
                   <Text style={styles.detalleTemario}>Temario: {item.temario}</Text>
                   <Text style={styles.detalleNota}>
-                    La inscripción y el pago de prueba estarán disponibles en el siguiente flujo.
+                    {item.cupoLleno
+                      ? 'Sin lugares disponibles para inscripción.'
+                      : 'La inscripción y el pago de prueba estarán disponibles en el siguiente flujo.'}
                   </Text>
                 </View>
               ) : null}
@@ -163,6 +171,7 @@ const styles = StyleSheet.create({
   },
   cursoSub: {
     fontSize: 12.5,
+    fontFamily: F.reg,
     color: colors.textSec,
     lineHeight: 18,
     marginTop: 4,
@@ -175,6 +184,12 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     gap: 10,
   },
+  pieAcciones: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flexShrink: 1,
+  },
   precio: {
     fontSize: 16,
     fontWeight: '800',
@@ -186,7 +201,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.mint,
     borderRadius: radius.pill,
     paddingHorizontal: 14,
-    minHeight: 40,
+    minHeight: 44,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -217,12 +232,14 @@ const styles = StyleSheet.create({
     fontFamily: F.bold,
     fontVariant: ['tabular-nums'],
   },
-  detalleTemario: { fontSize: 12.5, color: colors.textSec, lineHeight: 18, marginTop: 2 },
-  detalleNota: { fontSize: 11.5, color: colors.textSec, marginTop: 4 },
+  detalleCupoLleno: { color: colors.warnText },
+  detalleTemario: { fontSize: 12.5, fontFamily: F.reg, color: colors.textSec, lineHeight: 18, marginTop: 2 },
+  detalleNota: { fontSize: 11.5, fontFamily: F.reg, color: colors.textSec, marginTop: 4 },
   vacioCard: { alignItems: 'center', paddingVertical: spacing.xl },
   vacioTitulo: { fontSize: 15, fontWeight: '800', fontFamily: F.extra, color: colors.navy },
   vacioTexto: {
     fontSize: 13,
+    fontFamily: F.reg,
     color: colors.textSec,
     textAlign: 'center',
     lineHeight: 19,

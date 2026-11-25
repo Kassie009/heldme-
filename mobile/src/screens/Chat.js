@@ -4,7 +4,7 @@
  * Conversación vinculada a una solicitud, cotización o contratación (RF-19).
  * En vivo usará Supabase Realtime (RNF-13); por ahora simula envío local.
  */
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -42,13 +42,26 @@ export default function Chat({ nav, params }) {
   );
   const [borrador, setBorrador] = useState('');
   const listRef = useRef(null);
+  const seqRef = useRef(0);
+  const scrollTimerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+  }, []);
 
   const enviar = () => {
     const limpio = borrador.trim();
     if (!limpio) return;
-    setMensajes((prev) => [...prev, { id: `m-${Date.now()}`, de: 'yo', texto: limpio }]);
+    setMensajes((prev) => [
+      ...prev,
+      { id: `m-${Date.now()}-${++seqRef.current}`, de: 'yo', texto: limpio },
+    ]);
     setBorrador('');
-    setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 80);
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = setTimeout(() => {
+      scrollTimerRef.current = null;
+      listRef.current?.scrollToEnd({ animated: true });
+    }, 80);
   };
 
   const puedeEnviar = borrador.trim().length > 0;
@@ -106,13 +119,19 @@ export default function Chat({ nav, params }) {
               {tipoVinculo === 'contratacion' ? (
                 <TextLink
                   onPress={() =>
-                    nav.push('acuerdosServicio', { folio, profesionista: nombre })
+                    nav.push('acuerdosServicio', { folio, profesionista: nombre, titulo: servicio })
                   }
                 >
                   Revisar acuerdos del servicio
                 </TextLink>
               ) : (
-                <TextLink onPress={() => nav.push('cotizaciones')}>
+                <TextLink
+                  onPress={() =>
+                    nav.irACotizaciones
+                      ? nav.irACotizaciones({ servicio })
+                      : nav.push('cotizaciones', { servicio })
+                  }
+                >
                   Comparar cotizaciones
                 </TextLink>
               )}
@@ -129,6 +148,7 @@ export default function Chat({ nav, params }) {
           onChangeText={setBorrador}
           onSubmitEditing={enviar}
           returnKeyType="send"
+          submitBehavior="submit"
           accessibilityLabel="Escribir mensaje"
           style={styles.input}
           multiline
@@ -173,14 +193,14 @@ const styles = StyleSheet.create({
     fontFamily: F.extra,
     color: colors.navy,
   },
-  sub: { color: colors.textSec, fontSize: 12, marginTop: 2, fontVariant: ['tabular-nums'] },
+  sub: { color: colors.textSec, fontSize: 12, fontFamily: F.reg, marginTop: 2, fontVariant: ['tabular-nums'] },
   listaContent: { padding: spacing.lg, paddingBottom: spacing.xl },
   bubbleRow: { flexDirection: 'row', marginBottom: spacing.sm, justifyContent: 'flex-start' },
   bubbleRowYo: { justifyContent: 'flex-end' },
   bubble: { maxWidth: '80%', borderRadius: 18, paddingVertical: 11, paddingHorizontal: 14 },
   bubbleOtro: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border },
   bubbleYo: { backgroundColor: colors.teal },
-  bubbleTexto: { fontSize: 13.5, color: colors.navy, lineHeight: 19 },
+  bubbleTexto: { fontSize: 13.5, fontFamily: F.reg, color: colors.navy, lineHeight: 19 },
   bubbleTextoYo: { color: colors.white },
   cotCard: { marginTop: spacing.md },
   cotKicker: {
@@ -226,7 +246,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.panel,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.pill,
+    borderRadius: 24,
     paddingHorizontal: spacing.md,
     minHeight: 48,
     paddingTop: 12,

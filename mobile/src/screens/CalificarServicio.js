@@ -4,7 +4,7 @@
  * Calificación de 1 a 5 estrellas tras validar el código de finalización y
  * capturar el monto de prueba en Stripe Test Mode (RF-20, RF-21, RN-04).
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, F } from '../theme';
@@ -29,7 +29,7 @@ function SelectorEstrellas({ valor, alCambiar, deshabilitado }) {
             onPress={() => !deshabilitado && alCambiar(n)}
             disabled={deshabilitado}
             accessibilityRole="radio"
-            accessibilityState={{ selected: valor === n, disabled: deshabilitado }}
+            accessibilityState={{ checked: valor === n, disabled: deshabilitado }}
             accessibilityLabel={`${n} de 5 estrellas`}
             style={({ pressed }) => [
               styles.estrellaBtn,
@@ -55,10 +55,16 @@ export default function CalificarServicio({ nav, params }) {
   const [estrellas, setEstrellas] = useState(5);
   const [cargando, setCargando] = useState(false);
   const [enviada, setEnviada] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
 
   const enviar = () => {
     setCargando(true);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       setCargando(false);
       setEnviada(true);
     }, 650);
@@ -66,7 +72,11 @@ export default function CalificarServicio({ nav, params }) {
 
   return (
     <View style={styles.screen}>
-      <TopBar onBack={nav.back} />
+      <TopBar
+        onBack={
+          enviada ? () => nav.resetConPadre('buscar', 'contrataciones') : nav.back
+        }
+      />
       <ScrollView contentContainerStyle={styles.content} bounces={false}>
         <Text style={styles.titulo}>¿Cómo fue el servicio?</Text>
         <Text style={styles.sub}>Código de finalización validado · {folio}</Text>
@@ -77,7 +87,7 @@ export default function CalificarServicio({ nav, params }) {
           <SelectorEstrellas
             valor={estrellas}
             alCambiar={setEstrellas}
-            deshabilitado={enviada}
+            deshabilitado={enviada || cargando}
           />
           <Text style={styles.califEstado}>{etiquetas[estrellas]}</Text>
           <Text style={styles.califAyuda}>Califica de 1 a 5 estrellas</Text>
@@ -133,6 +143,7 @@ const styles = StyleSheet.create({
   sub: {
     color: colors.textSec,
     fontSize: 13,
+    fontFamily: F.reg,
     marginTop: 4,
     fontVariant: ['tabular-nums'],
   },
@@ -164,7 +175,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     fontVariant: ['tabular-nums'],
   },
-  califAyuda: { fontSize: 12, color: colors.textSec, marginTop: 4 },
+  califAyuda: { fontSize: 12, fontFamily: F.reg, color: colors.textSec, marginTop: 4 },
   montoCard: { marginTop: spacing.md },
   montoRow: {
     flexDirection: 'row',
@@ -179,7 +190,7 @@ const styles = StyleSheet.create({
     color: colors.navy,
     fontVariant: ['tabular-nums'],
   },
-  montoSub: { fontSize: 12, color: colors.textSec, marginTop: 4 },
+  montoSub: { fontSize: 12, fontFamily: F.reg, color: colors.textSec, marginTop: 4 },
   okBox: {
     marginTop: spacing.lg,
     backgroundColor: '#EBF4F6',
@@ -190,6 +201,6 @@ const styles = StyleSheet.create({
   },
   okHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   okTitulo: { fontSize: 15, fontWeight: '800', fontFamily: F.extra, color: colors.teal },
-  okTexto: { fontSize: 13, color: colors.navy, lineHeight: 19, marginTop: 6 },
+  okTexto: { fontSize: 13, fontFamily: F.reg, color: colors.navy, lineHeight: 19, marginTop: 6 },
   acciones: { marginTop: 'auto', paddingTop: spacing.xl },
 });

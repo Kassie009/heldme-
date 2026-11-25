@@ -9,18 +9,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, F } from '../theme';
 import { MenuItem, DrawerSection } from '../ui';
 
-export default function MenuLateral({ nav, params, pantallaActual = 'buscar' }) {
-  const tipo = params?.tipo ?? 'cliente';
-  const nombre = params?.nombre ?? 'Aaron Félix';
+export default function MenuLateral({ nav, params, sesion, pantallaActual = 'buscar' }) {
+  const tipo = sesion?.tipo ?? params?.tipo ?? 'cliente';
+  const nombre = sesion?.nombre ?? params?.nombre ?? 'Aaron Félix';
 
   // Deslizar el dedo a la izquierda cierra el menú (como en el mockup).
   const toqueInicial = useRef(null);
   const manejoSwipe = {
     onTouchStart: (e) => {
-      toqueInicial.current = e.nativeEvent.clientX;
+      const x = e.nativeEvent.pageX ?? e.nativeEvent.clientX;
+      if (x != null) toqueInicial.current = x;
     },
     onTouchMove: (e) => {
-      if (toqueInicial.current != null && e.nativeEvent.clientX - toqueInicial.current < -55) {
+      const x = e.nativeEvent.pageX ?? e.nativeEvent.clientX;
+      if (toqueInicial.current != null && x != null && x - toqueInicial.current < -55) {
         toqueInicial.current = null;
         nav.back();
       }

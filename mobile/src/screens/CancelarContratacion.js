@@ -4,7 +4,7 @@
  * Muestra anticipación frente al umbral de 48 h, cancelación de preautorización
  * sin cargo antes del inicio y motivo opcional (RN-09, RN-15).
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, F } from '../theme';
@@ -17,10 +17,16 @@ export default function CancelarContratacion({ nav, params }) {
   const [motivo, setMotivo] = useState('Cambio de planes');
   const [cargando, setCargando] = useState(false);
   const [cancelada, setCancelada] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
 
   const confirmarCancelacion = () => {
     setCargando(true);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       setCargando(false);
       setCancelada(true);
     }, 700);
@@ -31,7 +37,11 @@ export default function CancelarContratacion({ nav, params }) {
       style={styles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <TopBar onBack={nav.back} />
+      <TopBar
+        onBack={
+          cancelada ? () => nav.resetConPadre('buscar', 'contrataciones') : nav.back
+        }
+      />
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
@@ -68,6 +78,7 @@ export default function CancelarContratacion({ nav, params }) {
               placeholder="Escribe un motivo si lo deseas"
               value={motivo}
               onChangeText={setMotivo}
+              editable={!cancelada && !cargando}
               accessibilityLabel="Motivo de cancelación opcional"
             />
           </Field>
@@ -119,6 +130,7 @@ const styles = StyleSheet.create({
   sub: {
     color: colors.textSec,
     fontSize: 13,
+    fontFamily: F.reg,
     marginTop: 4,
     fontVariant: ['tabular-nums'],
   },
@@ -131,7 +143,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   divisor: { borderTopWidth: 1, borderTopColor: colors.border },
-  citaLabel: { fontSize: 13.5, color: colors.textSec },
+  citaLabel: { fontSize: 13.5, fontFamily: F.reg, color: colors.textSec },
   citaValor: {
     fontSize: 13.5,
     fontWeight: '700',
@@ -150,6 +162,7 @@ const styles = StyleSheet.create({
   infoTitulo: { fontSize: 14.5, fontWeight: '800', fontFamily: F.extra, color: colors.navy },
   infoTexto: {
     fontSize: 13,
+    fontFamily: F.reg,
     color: colors.navy,
     lineHeight: 19,
     marginTop: 4,
@@ -158,6 +171,7 @@ const styles = StyleSheet.create({
   nota: {
     color: colors.textSec,
     fontSize: 12.5,
+    fontFamily: F.reg,
     lineHeight: 18,
     marginTop: spacing.xs,
   },
@@ -173,6 +187,7 @@ const styles = StyleSheet.create({
   okTitulo: { fontSize: 15, fontWeight: '800', fontFamily: F.extra, color: colors.teal },
   okTexto: {
     fontSize: 13,
+    fontFamily: F.reg,
     color: colors.navy,
     lineHeight: 19,
     marginTop: 6,

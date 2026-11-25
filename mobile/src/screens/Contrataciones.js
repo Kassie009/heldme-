@@ -13,6 +13,8 @@ const contratacionesMock = [
     id: 'HM-2044',
     tab: 'activas',
     titulo: 'Reparación de fuga',
+    profesionista: 'Plomería Rivera',
+    monto: '$700.00',
     estado: 'Contratado',
     estadoTono: 'mint',
     detalle: 'HM-2044 · Plomería Rivera · Cita 16:00',
@@ -25,6 +27,8 @@ const contratacionesMock = [
     id: 'HM-2047',
     tab: 'activas',
     titulo: 'Cambio de tubería de cocina',
+    profesionista: 'Plomería Rivera',
+    monto: '$1,700.00',
     estado: 'En proceso',
     estadoTono: 'teal',
     detalle: 'HM-2047 · Plomería Rivera',
@@ -35,6 +39,8 @@ const contratacionesMock = [
     id: 'HM-2041',
     tab: 'activas',
     titulo: 'Reparación de boiler',
+    profesionista: 'Plomería Rivera',
+    monto: '$700.00',
     estado: 'Pendiente de confirmación',
     estadoTono: 'warn',
     detalle: 'HM-2041 · Plomería Rivera',
@@ -44,9 +50,11 @@ const contratacionesMock = [
     id: 'HM-1990',
     tab: 'canceladas',
     titulo: 'Instalación de ventilador',
+    profesionista: 'Electricidad Vega',
+    monto: '$450.00',
     estado: 'Cancelado',
     estadoTono: 'danger',
-    detalle: 'HM-1990 · Electricidad · Pago cancelado',
+    detalle: 'HM-1990 · Electricidad Vega · Pago cancelado',
     destino: 'pagoNoAutorizado',
   },
 ];
@@ -66,9 +74,18 @@ export default function Contrataciones({ nav }) {
   );
 
   const mensajeVacio =
-    tab === 'finalizadas'
-      ? 'Aún no tienes contrataciones finalizadas.'
-      : 'No hay contrataciones en esta sección.';
+    tab === 'activas'
+      ? 'No tienes contrataciones activas.'
+      : tab === 'finalizadas'
+        ? 'Aún no tienes contrataciones finalizadas.'
+        : 'No tienes contrataciones canceladas.';
+
+  const detalleVacio =
+    tab === 'activas'
+      ? 'Cuando selecciones una cotización y confirmes los acuerdos, tu contratación aparecerá aquí.'
+      : tab === 'finalizadas'
+        ? 'Cuando valides un código de finalización y califiques un servicio, aparecerá aquí.'
+        : 'Las contrataciones canceladas o con pagos no autorizados se mostrarán en esta sección.';
 
   return (
     <View style={styles.screen}>
@@ -95,7 +112,15 @@ export default function Contrataciones({ nav }) {
         }
         renderItem={({ item }) => (
           <Pressable
-            onPress={() => nav.push(item.destino, { folio: item.id, titulo: item.titulo })}
+            onPress={() =>
+              nav.push(item.destino, {
+                folio: item.id,
+                titulo: item.titulo,
+                profesionista: item.profesionista,
+                monto: item.monto,
+                origen: 'contrataciones',
+              })
+            }
             accessibilityRole="button"
             accessibilityLabel={`Abrir contratación ${item.titulo}`}
             style={({ pressed }) => [styles.itemPress, pressed && styles.itemPressed]}
@@ -123,9 +148,7 @@ export default function Contrataciones({ nav }) {
         ListEmptyComponent={
           <Card style={styles.vacioCard}>
             <Text style={styles.vacioTitulo}>{mensajeVacio}</Text>
-            <Text style={styles.vacioTexto}>
-              Cuando valides un código de finalización y califiques un servicio, aparecerá aquí.
-            </Text>
+            <Text style={styles.vacioTexto}>{detalleVacio}</Text>
             <SecondaryButton
               label="Explorar servicios"
               onPress={() => nav.reset('buscar')}
@@ -169,6 +192,7 @@ const styles = StyleSheet.create({
   cardDetalle: {
     color: colors.textSec,
     fontSize: 12.5,
+    fontFamily: F.reg,
     marginTop: 5,
     fontVariant: ['tabular-nums'],
   },
@@ -199,6 +223,7 @@ const styles = StyleSheet.create({
   },
   vacioTexto: {
     fontSize: 13,
+    fontFamily: F.reg,
     color: colors.textSec,
     textAlign: 'center',
     lineHeight: 19,
