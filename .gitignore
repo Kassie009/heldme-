@@ -45,3 +45,6 @@ uploads/
 *.swp
 Thumbs.db
 .DS_Store
+
+# Build web temporal (expo export)
+.webtest/
