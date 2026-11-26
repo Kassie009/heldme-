@@ -33,7 +33,7 @@ export default function PerfilProfesional({ nav, params }) {
         if (params?.correo) {
           registrarCuenta({ correo: params.correo, tipo: 'profesionista', nombre: params.nombre || 'Profesionista', clave: params.clave });
         }
-        nav.reset('iniciarSesion');
+        nav.reset('verificacion', { estado: 'pendiente' });
         setCargando(false);
       }, 900);
     }

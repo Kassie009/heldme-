@@ -8,6 +8,9 @@ Stripe **Test Mode**.
 > Documento rector: `docs/SRS_v3.3.pdf` — Especificación de Requerimientos v3.3 (IEEE 830 simplificado).
 > Documento técnico: `docs/endpoints-esquema.pdf` — Equipo, endpoints y esquema de base de datos.
 
+> ℹ️ Los integrantes de la portada del SRS son los **dueños del proyecto**; el equipo que
+> lo desarrolla es el que se lista abajo.
+
 ## Equipo y responsabilidades
 
 | Integrante | Rol | Carpeta principal | Responsabilidades clave |

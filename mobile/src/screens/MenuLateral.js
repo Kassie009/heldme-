@@ -55,10 +55,10 @@ export default function MenuLateral({ nav, params, sesion, pantallaActual = 'bus
           {tipo === 'profesionista' ? (
             <>
               <DrawerSection>Servicios</DrawerSection>
-              <MenuItem icon="construct" label="Mis servicios" onPress={nav.back} />
-              <MenuItem icon="document-text" label="Solicitudes recibidas" onPress={nav.back} />
-              <MenuItem icon="receipt" label="Cotizaciones" onPress={nav.back} />
-              <MenuItem icon="calendar" label="Calendario" onPress={nav.back} />
+              <MenuItem icon="construct" label="Mis servicios" active={pantallaActual === 'misServiciosPro'} onPress={() => nav.reset('misServiciosPro', { tipo, nombre })} />
+              <MenuItem icon="document-text" label="Solicitudes recibidas" active={pantallaActual === 'solicitudesPro'} onPress={() => nav.reset('solicitudesPro', { tipo, nombre })} />
+              <MenuItem icon="receipt" label="Cotizaciones" active={pantallaActual === 'cotizarPro'} onPress={() => nav.resetConPadre('solicitudesPro', 'cotizarPro', { tipo, nombre })} />
+              <MenuItem icon="calendar" label="Calendario" active={pantallaActual === 'calendarioPro'} onPress={() => nav.reset('calendarioPro', { tipo, nombre })} />
               <MenuItem icon="key" label="Códigos de servicio" onPress={nav.back} />
               <MenuItem icon="chatbubbles" label="Chat" onPress={nav.back} />
 
@@ -66,7 +66,7 @@ export default function MenuLateral({ nav, params, sesion, pantallaActual = 'bus
               <MenuItem icon="school" label="Cursos autorizados" onPress={nav.back} />
 
               <DrawerSection>Cuenta</DrawerSection>
-              <MenuItem icon="person" label="Perfil y verificación" onPress={nav.back} />
+              <MenuItem icon="person" label="Perfil y verificación" active={pantallaActual === 'verificacion'} onPress={() => nav.resetConPadre('misServiciosPro', 'verificacion', { tipo, nombre, estado: 'pendiente' })} />
             </>
           ) : (
             <>
@@ -111,7 +111,12 @@ export default function MenuLateral({ nav, params, sesion, pantallaActual = 'bus
               />
 
               <DrawerSection>Cuenta</DrawerSection>
-              <MenuItem icon="person" label="Perfil" onPress={nav.back} />
+              <MenuItem
+                icon="person"
+                label="Perfil"
+                active={pantallaActual === 'perfilCliente'}
+                onPress={() => nav.reset('perfilCliente', { tipo, nombre })}
+              />
             </>
           )}
         </ScrollView>
