@@ -44,10 +44,29 @@ misma cuenta del teléfono, o cerrar sesión dentro de Expo Go.
 | 25 | Cancelar contratación (regla 48 h) | `src/screens/CancelarContratacion.js` |
 | 26 | Cursos (catálogo y modalidades) | `src/screens/Cursos.js` |
 
+### Pantallas del profesionista (40-52 del mockup, págs. 9-11)
+
+| # | Pantalla | Archivo |
+|---|---|---|
+| 40 | Mis cotizaciones (versiones y adicionales) | `src/profesionista/screens/MisCotizaciones.js` |
+| 41 | Conversaciones / Chat (lista) | `src/profesionista/screens/Conversaciones.js` |
+| 42 | Chat (conversación y tarjeta de cotización) | `src/profesionista/screens/ChatConversacion.js` |
+| 43 | Iniciar servicio (código de inicio) | `src/profesionista/screens/IniciarServicio.js` |
+| 44 | Finalizar servicio (comprobantes y código de fin) | `src/profesionista/screens/FinalizarServicio.js` |
+| 45 | Solicitar revisión (sin segundo código) | `src/profesionista/screens/SolicitarRevision.js` |
+| 46 | Desglose del pago (plataforma, directo, comisión) | `src/profesionista/screens/DesglosePago.js` |
+| 47 | Cancelar contratación (regla 48 h y strike) | `src/profesionista/screens/CancelarContratacion.js` |
+| 48 | Cursos · Autorización (rango mínimo Plata) | `src/profesionista/screens/CursosAutorizacion.js` |
+| 49 | Nuevo curso (presencial / en línea, borrador y envío) | `src/profesionista/screens/NuevoCurso.js` |
+| 50 | Mis cursos (publicados, cupo e inscritos) | `src/profesionista/screens/MisCursos.js` |
+| 51 | Perfil y rango (calificación y verificación) | `src/profesionista/screens/PerfilProfesional.js` |
+| 52 | Perfil con sanción (strikes, suspensión e historial) | `src/profesionista/screens/PerfilProfesional.js` |
+
 - Identidad visual: `src/theme.js` (manual: navy `#102044`, teal `#176B78`, lienzo `#F4F7F8`).
-- Componentes compartidos: `src/ui.js` (TopBar, botones, tarjetas, chips, menú).
-- Navegación: pila simple en `App.js` (push/back/reset/replace + drawer overlay).
+- Componentes compartidos: `src/ui.js` (TopBar, botones, tarjetas, chips, menú) y `src/profesionista/components/`.
+- Navegación: pila simple en `App.js` (push/back/reset/replace + drawer overlay) con adaptadores en `src/profesionista/rutas.js`.
   Los botones de atrás regresan a la pantalla anterior real.
+- Pruebas unitarias del módulo profesionista: `npm test`.
 - Todo es estático: los formularios validan en cliente pero no envían datos.
 
 ## Reglas de Jorge (frontend)
@@ -59,9 +78,8 @@ misma cuenta del teléfono, o cerrar sesión dentro de Expo Go.
 - Sin referencias RF/ARQ en los textos visibles de la app (van en comentarios y commits).
 - Mientras el backend no esté listo, trabajar con datos simulados (mocks).
 
-## Pantallas pendientes (cierre de cliente y flujo profesionista, mockup páginas 6-11)
+## Pantallas pendientes (mockup páginas 6-9)
 
 Inscripción y pago de curso, mi inscripción y baja, perfil del cliente con pagos de prueba,
 verificación profesional (4 estados), servicios del profesionista, solicitudes recibidas,
-calendario, cotizar y negociar, servicio en curso (códigos), cursos del profesionista
-y perfil con sanciones.
+calendario y crear cotización inicial.

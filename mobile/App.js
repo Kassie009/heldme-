@@ -67,6 +67,8 @@ import VerificacionPro from './src/screens/VerificacionPro';
 import CursoDetalle from './src/screens/CursoDetalle';
 import Inscripcion from './src/screens/Inscripcion';
 import PerfilCliente from './src/screens/PerfilCliente';
+import PanelProfesionista from './src/screens/PanelProfesionista';
+import { rutasProfesionista } from './src/profesionista/rutas';
 import { colors } from './src/theme';
 
 const pantallas = {
@@ -95,6 +97,8 @@ const pantallas = {
   reportarInasistencia: ReportarInasistencia,
   cancelarContratacion: CancelarContratacion,
   cursos: Cursos,
+  panelProfe: PanelProfesionista,
+  ...rutasProfesionista,
   misServiciosPro: MisServiciosPro,
   publicarServicioPro: PublicarServicioPro,
   solicitudesPro: SolicitudesRecibidasPro,
