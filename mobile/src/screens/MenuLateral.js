@@ -124,7 +124,7 @@ export default function MenuLateral({ nav, params, sesion, pantallaActual = 'bus
               />
               <MenuItem
                 icon="alert-circle"
-                label="Perfil con sanción"
+                label="Mis sanciones"
                 active={pantallaActual === 'proPerfilConSancion'}
                 onPress={() => nav.resetConPadre('panelProfe', 'proPerfilConSancion', { tipo, nombre })}
               />

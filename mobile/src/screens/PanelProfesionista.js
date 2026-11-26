@@ -21,7 +21,7 @@ const apartados = [
   { icono: 'ribbon', titulo: 'Cursos · Autorización', desc: 'Requisitos de rango para impartir cursos', ruta: 'proCursosAutorizacion' },
   { icono: 'school', titulo: 'Mis cursos', desc: 'Cursos publicados, inscritos y nuevo curso', ruta: 'proMisCursos' },
   { icono: 'person', titulo: 'Perfil y rango', desc: 'Calificación, servicios completados y verificación', ruta: 'proPerfilProfesional' },
-  { icono: 'alert-circle', titulo: 'Perfil con sanción', desc: 'Strikes, suspensión temporal e historial', ruta: 'proPerfilConSancion' },
+  { icono: 'alert-circle', titulo: 'Mis sanciones', desc: 'Strikes, suspensión temporal e historial', ruta: 'proPerfilConSancion' },
   { icono: 'construct', titulo: 'Mis servicios', desc: 'Publicar, editar, pausar y retirar (pendiente de construcción)' },
   { icono: 'document-text', titulo: 'Solicitudes recibidas', desc: 'Solicitudes de clientes en tu zona (pendiente)' },
   { icono: 'calendar', titulo: 'Calendario', desc: 'Disponibilidad y reservas sin duplicados (pendiente)' },
