@@ -58,7 +58,7 @@ export default function IniciarSesion({ nav }) {
       return;
     }
     // Cada rol entra a su pantalla de inicio (RF-02).
-    const destino = cuenta.tipo === 'profesionista' ? 'misServiciosPro' : 'buscar';
+    const destino = cuenta.tipo === 'profesionista' ? 'panelProfe' : 'buscar';
     setError('');
     // Simulación sin backend: breve carga y navegación.
     setCargando(true);
