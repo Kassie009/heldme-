@@ -59,6 +59,7 @@ import CalificarServicio from './src/screens/CalificarServicio';
 import ReportarInasistencia from './src/screens/ReportarInasistencia';
 import CancelarContratacion from './src/screens/CancelarContratacion';
 import Cursos from './src/screens/Cursos';
+import { rutasProfesionista } from './src/profesionista/rutas';
 import { colors } from './src/theme';
 
 const pantallas = {
@@ -88,6 +89,7 @@ const pantallas = {
   reportarInasistencia: ReportarInasistencia,
   cancelarContratacion: CancelarContratacion,
   cursos: Cursos,
+  ...rutasProfesionista,
 };
 
 const SESION_INICIAL = { tipo: 'cliente', nombre: 'Aaron Félix' };
