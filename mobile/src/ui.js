@@ -277,6 +277,24 @@ export function ErrorText({ children }) {
   return <Text style={styles.errorText}>{children}</Text>;
 }
 
+/** Fila de información: etiqueta a la izquierda, valor a la derecha. */
+export function InfoRow({ label, value, tone }) {
+  return (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text
+        style={[
+          styles.infoValue,
+          tone === 'warn' && { color: colors.warnText },
+          tone === 'teal' && { color: colors.teal },
+        ]}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+}
+
 /** Fila de ítem del menú lateral. */
 export function MenuItem({ icon, label, active = false, onPress, right }) {
   return (
@@ -322,6 +340,14 @@ const styles = StyleSheet.create({
   },
   field: { marginBottom: spacing.md },
   fieldLabelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 7,
+  },
+  infoLabel: { fontSize: 12.5, color: colors.textSec, fontWeight: '600', fontFamily: F.semi, flex: 1 },
+  infoValue: { fontSize: 13, color: colors.navy, fontWeight: '700', fontFamily: F.bold, marginLeft: 12 },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',

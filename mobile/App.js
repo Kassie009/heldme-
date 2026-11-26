@@ -38,7 +38,6 @@ import RegistroCliente from './src/screens/RegistroCliente';
 import RegistroProfesionista from './src/screens/RegistroProfesionista';
 import PerfilProfesional from './src/screens/PerfilProfesional';
 import MenuLateral from './src/screens/MenuLateral';
-import PanelProfesionista from './src/screens/PanelProfesionista';
 import Buscar from './src/screens/Buscar';
 import ResultadosIA from './src/screens/ResultadosIA';
 import CambiarCategoria from './src/screens/CambiarCategoria';
@@ -59,6 +58,15 @@ import CalificarServicio from './src/screens/CalificarServicio';
 import ReportarInasistencia from './src/screens/ReportarInasistencia';
 import CancelarContratacion from './src/screens/CancelarContratacion';
 import Cursos from './src/screens/Cursos';
+import MisServiciosPro from './src/screens/MisServiciosPro';
+import PublicarServicioPro from './src/screens/PublicarServicioPro';
+import SolicitudesRecibidasPro from './src/screens/SolicitudesRecibidasPro';
+import CotizarPro from './src/screens/CotizarPro';
+import CalendarioPro from './src/screens/CalendarioPro';
+import VerificacionPro from './src/screens/VerificacionPro';
+import CursoDetalle from './src/screens/CursoDetalle';
+import Inscripcion from './src/screens/Inscripcion';
+import PerfilCliente from './src/screens/PerfilCliente';
 import { rutasProfesionista } from './src/profesionista/rutas';
 import { colors } from './src/theme';
 
@@ -69,7 +77,6 @@ const pantallas = {
   registroProfesionista: RegistroProfesionista,
   perfilProfesional: PerfilProfesional,
   buscar: Buscar,
-  panelProfe: PanelProfesionista,
   resultadosIA: ResultadosIA,
   cambiarCategoria: CambiarCategoria,
   sinResultados: SinResultados,
@@ -89,6 +96,15 @@ const pantallas = {
   reportarInasistencia: ReportarInasistencia,
   cancelarContratacion: CancelarContratacion,
   cursos: Cursos,
+  misServiciosPro: MisServiciosPro,
+  publicarServicioPro: PublicarServicioPro,
+  solicitudesPro: SolicitudesRecibidasPro,
+  cotizarPro: CotizarPro,
+  calendarioPro: CalendarioPro,
+  verificacion: VerificacionPro,
+  cursoDetalle: CursoDetalle,
+  inscripcion: Inscripcion,
+  perfilCliente: PerfilCliente,
   ...rutasProfesionista,
 };
 
@@ -128,7 +144,7 @@ export default function App() {
       setSesion(nueva);
       return nueva;
     }
-    if ((s === 'buscar' || s === 'panelProfe') && params?.nombre) {
+    if ((s === 'buscar' || s === 'misServiciosPro') && params?.nombre) {
       const nueva = { ...sesion, nombre: params.nombre };
       setSesion(nueva);
       return nueva;

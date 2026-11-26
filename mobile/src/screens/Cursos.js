@@ -7,7 +7,7 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing, F } from '../theme';
-import { Badge, Card, Chip, TopBar } from '../ui';
+import { Badge, Card, Chip, PrimaryButton, TopBar } from '../ui';
 
 const cursosCatalogo = [
   {
@@ -132,6 +132,13 @@ export default function Cursos({ nav }) {
                       ? 'Sin lugares disponibles para inscripción.'
                       : 'La inscripción y el pago de prueba estarán disponibles en el siguiente flujo.'}
                   </Text>
+                  {!item.cupoLleno && (
+                    <PrimaryButton
+                      label="Ver detalle e inscribirme (prueba)"
+                      onPress={() => nav.push('cursoDetalle', { titulo: item.titulo })}
+                      style={{ marginTop: 10 }}
+                    />
+                  )}
                 </View>
               ) : null}
             </Card>

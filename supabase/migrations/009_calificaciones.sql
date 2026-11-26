@@ -1,18 +1,41 @@
--- =============================================================================
--- HeldMe! | Migracion 009 — 009 calificaciones
--- Responsable: Jeshua (base de datos)
--- Requerimientos: RF-20, RF-21, RN-04
--- Notas del diseno: Una calificacion por contratacion; promedio < 4.0 bloquea ascenso sin descender de rango (RN-04).
---
--- PENDIENTE (Jeshua): escribir el DDL real de las tablas:
---
---   - calificaciones (1 a 5 estrellas, una por contratacion, UNIQUE)
---
---   - metricas_profesionista (contador de trabajos, promedio, rango, strikes_activos)
---
--- RECORDAR EN TODA MIGRACION:
---   * enable_row_level_security en cada tabla expuesta + politicas RLS (ARQ-04).
---   * Llaves primarias uuid (gen_random_uuid()).
---   * Enum de estados donde aplique (ver docs/endpoints-esquema.pdf).
---   * Sin GPS ni coordenadas: solo zona aproximada en texto (ARQ-07).
--- =============================================================================
+-- 009_calificaciones.sql
+-- Tablas: calificaciones, metricas_profesionista
+-- Referencias: RF-20, RF-21, RN-04, RN-09
+
+-- Una calificación de 1 a 5 estrellas por servicio confirmado (RF-20)
+create table public.calificaciones (
+  id               uuid primary key default gen_random_uuid(),
+  contratacion_id  uuid not null unique references public.contrataciones (id),
+  cliente_id       uuid not null references public.perfiles (id),
+  profesionista_id uuid not null references public.profesionistas (id),
+  estrellas        smallint not null check (estrellas between 1 and 5),
+  comentario       text,
+  creado_en        timestamptz not null default now()
+);
+
+create index calificaciones_profesionista_idx on public.calificaciones (profesionista_id, creado_en desc);
+
+-- Métricas y rango de cada profesionista aprobado (RF-21). Las actualiza el backend al confirmar servicios.
+create table public.metricas_profesionista (
+  profesionista_id                 uuid primary key references public.profesionistas (id) on delete cascade,
+  servicios_completados            integer not null default 0 check (servicios_completados >= 0),
+  total_calificaciones             integer not null default 0 check (total_calificaciones >= 0),
+  calificacion_promedio            numeric(3, 2) check (calificacion_promedio between 1 and 5), -- null sin calificaciones
+  -- RN-04: rango alcanzado; un promedio menor a 4.0 bloquea el ascenso pero no lo desciende
+  rango                            text not null default 'bronce' check (rango in ('bronce', 'plata', 'oro', 'diamante')),
+  -- RN-09: con penalización se muestra un nivel inferior al alcanzado
+  rango_mostrado                   text not null default 'bronce' check (rango_mostrado in ('bronce', 'plata', 'oro', 'diamante')),
+  penalizacion_activa              boolean not null default false,
+  penalizacion_desde               timestamptz,
+  -- Servicios confirmados sin faltas que faltan para levantar la penalización (inicia en 10)
+  penalizacion_servicios_restantes smallint not null default 0 check (penalizacion_servicios_restantes between 0 and 10),
+  strikes_vigentes                 smallint not null default 0 check (strikes_vigentes >= 0),
+  actualizado_en                   timestamptz not null default now()
+);
+
+create trigger metricas_profesionista_set_actualizado_en
+  before update on public.metricas_profesionista
+  for each row execute function public.set_actualizado_en();
+
+alter table public.calificaciones enable row level security;
+alter table public.metricas_profesionista enable row level security;

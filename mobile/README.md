@@ -78,8 +78,6 @@ misma cuenta del teléfono, o cerrar sesión dentro de Expo Go.
 - Sin referencias RF/ARQ en los textos visibles de la app (van en comentarios y commits).
 - Mientras el backend no esté listo, trabajar con datos simulados (mocks).
 
-## Pantallas pendientes (mockup páginas 6-9)
+## Estado del mockup
 
-Inscripción y pago de curso, mi inscripción y baja, perfil del cliente con pagos de prueba,
-verificación profesional (4 estados), servicios del profesionista, solicitudes recibidas,
-calendario y crear cotización inicial.
+Las 52 pantallas del mockup móvil (páginas 1 a 11) se encuentran implementadas en frontend con datos simulados.
