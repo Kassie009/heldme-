@@ -67,6 +67,7 @@ import VerificacionPro from './src/screens/VerificacionPro';
 import CursoDetalle from './src/screens/CursoDetalle';
 import Inscripcion from './src/screens/Inscripcion';
 import PerfilCliente from './src/screens/PerfilCliente';
+import Notificaciones from './src/screens/Notificaciones';
 import PanelProfesionista from './src/screens/PanelProfesionista';
 import { rutasProfesionista } from './src/profesionista/rutas';
 import { colors } from './src/theme';
@@ -108,6 +109,7 @@ const pantallas = {
   cursoDetalle: CursoDetalle,
   inscripcion: Inscripcion,
   perfilCliente: PerfilCliente,
+  notificaciones: Notificaciones,
 };
 
 const SESION_INICIAL = { tipo: 'cliente', nombre: 'Aaron Félix' };

@@ -7,7 +7,7 @@ import React, { useRef } from 'react';
 import { Text, View, Image, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, F } from '../theme';
-import { MenuItem, DrawerSection } from '../ui';
+import { MenuItem, DrawerSection, Badge } from '../ui';
 
 export default function MenuLateral({ nav, params, sesion, pantallaActual = 'buscar' }) {
   const tipo = sesion?.tipo ?? params?.tipo ?? 'cliente';
@@ -100,6 +100,13 @@ export default function MenuLateral({ nav, params, sesion, pantallaActual = 'bus
                 active={pantallaActual === 'proConversaciones' || pantallaActual === 'proChat'}
                 onPress={() => nav.resetConPadre('panelProfe', 'proConversaciones', { tipo, nombre })}
               />
+              <MenuItem
+                icon="notifications"
+                label="Notificaciones"
+                right={<Badge label="2" tone="teal" />}
+                active={pantallaActual === 'notificaciones'}
+                onPress={() => nav.resetConPadre('panelProfe', 'notificaciones', { tipo, nombre })}
+              />
 
               <DrawerSection>Aprendizaje</DrawerSection>
               <MenuItem
@@ -161,6 +168,13 @@ export default function MenuLateral({ nav, params, sesion, pantallaActual = 'bus
                 label="Chat"
                 active={pantallaActual === 'conversaciones'}
                 onPress={() => nav.resetConPadre('buscar', 'conversaciones', { tipo, nombre })}
+              />
+              <MenuItem
+                icon="notifications"
+                label="Notificaciones"
+                right={<Badge label="2" tone="teal" />}
+                active={pantallaActual === 'notificaciones'}
+                onPress={() => nav.resetConPadre('buscar', 'notificaciones', { tipo, nombre })}
               />
 
               <DrawerSection>Aprendizaje</DrawerSection>
