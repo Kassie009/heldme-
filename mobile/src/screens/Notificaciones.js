@@ -36,7 +36,7 @@ export default function Notificaciones({ nav, params }) {
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} bounces={false}>
-        <TopBar onMenu={nav.openMenu} />
+        <TopBar onMenu={nav.openMenu} onBack={nav.puedeRetroceder ? nav.back : undefined} />
         <View style={styles.header}>
           <Text style={styles.titulo}>Notificaciones</Text>
           {sinLeer > 0 && <Badge label={sinLeer + ' sin leer'} tone="teal" />}

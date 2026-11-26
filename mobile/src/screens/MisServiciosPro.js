@@ -44,7 +44,9 @@ export default function MisServiciosPro({ nav }) {
           <Chip label="Pausados" active={filtro === 'pausados'} onPress={() => setFiltro('pausados')} />
         </View>
 
-        {servicios.map((s) => (
+        {servicios
+          .filter((s) => (filtro === 'publicados' ? s.estado === 'Publicado' : s.estado === 'Pausado'))
+          .map((s) => (
           <Card key={s.titulo} style={styles.card}>
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitulo} numberOfLines={1}>{s.titulo}</Text>
@@ -71,8 +73,11 @@ export default function MisServiciosPro({ nav }) {
             )}
           </Card>
         ))}
+        {servicios.filter((s) => (filtro === 'publicados' ? s.estado === 'Publicado' : s.estado === 'Pausado')).length === 0 && (
+          <Text style={styles.sinResultados}>No tienes servicios en este estado.</Text>
+        )}
 
-        <PrimaryButton label="Publicar servicio" onPress={() => nav.push('publicarServicio')} style={{ marginTop: spacing.md }} />
+        <PrimaryButton label="Publicar servicio" onPress={() => nav.push('publicarServicioPro')} style={{ marginTop: spacing.md }} />
       </ScrollView>
     </View>
   );
@@ -90,4 +95,5 @@ const styles = StyleSheet.create({
   acciones: { flexDirection: 'row', gap: 18, marginTop: 12, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 10 },
   accionTexto: { color: colors.navy, fontSize: 13, fontWeight: '700', fontFamily: F.bold },
   accionAviso: { color: colors.textSec, fontSize: 11, marginTop: 8 },
+  sinResultados: { color: colors.textSec, fontSize: 13, textAlign: 'center', marginVertical: spacing.lg },
 });

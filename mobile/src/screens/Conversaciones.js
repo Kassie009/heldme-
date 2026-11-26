@@ -58,7 +58,7 @@ export default function Conversaciones({ nav }) {
 
   return (
     <View style={styles.screen}>
-      <TopBar onMenu={nav.openMenu} />
+      <TopBar onMenu={nav.openMenu} onBack={nav.puedeRetroceder ? nav.back : undefined} />
       <FlatList
         data={visibles}
         keyExtractor={(item) => item.id}

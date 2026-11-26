@@ -18,7 +18,7 @@ import {
 } from './screens';
 
 function ProMisCotizaciones({ nav }) {
-  return <MisCotizaciones onMenu={nav.openMenu} />;
+  return <MisCotizaciones onMenu={nav.openMenu} onBack={nav.puedeRetroceder ? nav.back : undefined} />;
 }
 
 function ProConversaciones({ nav }) {
@@ -43,7 +43,7 @@ function ProChat({ nav, params }) {
 }
 
 function ProIniciarServicio({ nav }) {
-  return <IniciarServicio onMenu={nav.openMenu} />;
+  return <IniciarServicio onMenu={nav.openMenu} onBack={nav.puedeRetroceder ? nav.back : undefined} />;
 }
 
 function ProFinalizarServicio({ nav }) {
@@ -60,7 +60,7 @@ function ProSolicitarRevision({ nav, params }) {
 }
 
 function ProDesglosePago({ nav }) {
-  return <DesglosePago onMenu={nav.openMenu} />;
+  return <DesglosePago onMenu={nav.openMenu} onBack={nav.puedeRetroceder ? nav.back : undefined} />;
 }
 
 function ProCancelarContratacion({ nav }) {
@@ -74,11 +74,11 @@ function ProCancelarContratacion({ nav }) {
 }
 
 function ProCursosAutorizacion({ nav }) {
-  return <CursosAutorizacion onMenu={nav.openMenu} />;
+  return <CursosAutorizacion onMenu={nav.openMenu} onBack={nav.puedeRetroceder ? nav.back : undefined} />;
 }
 
 function ProNuevoCurso({ nav }) {
-  return <NuevoCurso onMenu={nav.openMenu} />;
+  return <NuevoCurso onMenu={nav.openMenu} onBack={nav.puedeRetroceder ? nav.back : undefined} />;
 }
 
 function ProMisCursos({ nav }) {
@@ -100,7 +100,7 @@ function ProPerfilProfesional({ nav }) {
 }
 
 function ProPerfilConSancion({ nav }) {
-  return <PerfilConSancion onMenu={nav.openMenu} />;
+  return <PerfilConSancion onMenu={nav.openMenu} onBack={nav.puedeRetroceder ? nav.back : undefined} />;
 }
 
 export const rutasProfesionista = {

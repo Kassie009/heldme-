@@ -73,7 +73,12 @@ export default function PublicarNecesidad({ nav }) {
       <ErrorText>{errores.que}</ErrorText>
 
       <Field label="CATEGORÍA">
-        <SelectBox value={d.categoria} placeholder="Elige una categoría" />
+        <SelectBox
+          value={d.categoria}
+          placeholder="Elige una categoría"
+          opciones={['Plomería', 'Electricidad', 'Climatización', 'Carpintería', 'Pintura']}
+          onChange={(v) => setD((p) => ({ ...p, categoria: v }))}
+        />
       </Field>
 
       <Field label="ZONA APROXIMADA">

@@ -162,6 +162,7 @@ export default function App() {
       setPila((p) => [...p, { s, params }]);
     },
     back: () => setPila((p) => (p.length > 1 ? p.slice(0, -1) : p)),
+    puedeRetroceder: pila.length > 1,
     reset: (s, params = {}) => {
       const sesionActual = actualizarSesion(s, params);
       const nextParams =

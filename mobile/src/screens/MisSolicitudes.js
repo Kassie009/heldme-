@@ -36,7 +36,7 @@ export default function MisSolicitudes({ nav }) {
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} bounces={false}>
-        <TopBar onMenu={nav.openMenu} />
+        <TopBar onMenu={nav.openMenu} onBack={nav.puedeRetroceder ? nav.back : undefined} />
         <Text style={styles.titulo}>Mis solicitudes</Text>
 
         <View style={styles.chips}>

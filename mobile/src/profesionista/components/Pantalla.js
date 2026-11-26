@@ -1,17 +1,17 @@
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+﻿import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Encabezado from './Encabezado';
 import { colores } from '../theme';
 
-// Estructura común: menú + logo, título grande, subtítulo, contenido que se desplaza
+// Estructura comÃºn: menÃº + logo, tÃ­tulo grande, subtÃ­tulo, contenido que se desplaza
 // y (opcional) botones fijos abajo en "pie".
-// No agrega margen superior: se asume que la app ya está dentro de un área segura.
-export default function Pantalla({ titulo, subtitulo, onMenu, children, pie }) {
+// No agrega margen superior: se asume que la app ya estÃ¡ dentro de un Ã¡rea segura.
+export default function Pantalla({ titulo, subtitulo, onMenu, onBack, children, pie }) {
   return (
     <KeyboardAvoidingView
       style={estilos.raiz}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <Encabezado onMenu={onMenu} />
+      <Encabezado onMenu={onMenu} onBack={onBack} />
       <ScrollView contentContainerStyle={estilos.contenido} keyboardShouldPersistTaps="handled">
         {!!titulo && <Text style={estilos.titulo}>{titulo}</Text>}
         {!!subtitulo && <Text style={estilos.subtitulo}>{subtitulo}</Text>}

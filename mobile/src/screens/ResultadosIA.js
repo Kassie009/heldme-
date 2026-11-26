@@ -29,7 +29,7 @@ export default function ResultadosIA({ nav, params }) {
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} bounces={false}>
-        <TopBar onMenu={nav.openMenu} />
+        <TopBar onMenu={nav.openMenu} onBack={nav.puedeRetroceder ? nav.back : undefined} />
         <Text style={styles.titulo}>Buscar</Text>
 
         <View style={styles.inputWrap}>

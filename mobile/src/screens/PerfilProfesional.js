@@ -6,7 +6,7 @@
  */
 import React, { useState } from 'react';
 import { Text, View, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { colors, radius, spacing, F } from '../theme';
 import {
   TopBar, PrimaryButton, Field, TextInputBox, Badge, Label, ErrorText,
@@ -17,6 +17,37 @@ export default function PerfilProfesional({ nav, params }) {
   const [d, setD] = useState({ especialidad: '', zona: '', experiencia: '' });
   const [errores, setErrores] = useState({});
   const [cargando, setCargando] = useState(false);
+  const [documentos, setDocumentos] = useState({
+    identificacion: 'Adjuntar',
+    evidencia: 'Adjuntar',
+    certificados: 'Adjuntar',
+  });
+  const [avisoDocs, setAvisoDocs] = useState('');
+
+  /** Adjuntar documento: galería, valida tipo (JPG/PNG/WebP) y tamaño (5 MB). */
+  const adjuntar = async (campo) => {
+    setAvisoDocs('');
+    const resultado = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.8,
+    });
+    if (resultado.canceled) return;
+    const asset = resultado.assets[0];
+    const tipoOk = /\/(jpeg|jpg|png|webp)$/.test(asset.mimeType || '');
+    const megaBytes = (asset.fileSize || 0) / (1024 * 1024);
+    if (!tipoOk) {
+      setAvisoDocs('Solo se aceptan imágenes JPG, PNG o WebP.');
+      return;
+    }
+    if (megaBytes > 5) {
+      setAvisoDocs('La imagen supera el máximo de 5 MB.');
+      return;
+    }
+    setDocumentos((doc) => ({
+      ...doc,
+      [campo]: campo === 'evidencia' ? '1 foto adjunta ✓' : 'Adjunto ✓',
+    }));
+  };
 
   const cambiar = (campo, valor) => setD((p) => ({ ...p, [campo]: valor }));
 
@@ -25,6 +56,10 @@ export default function PerfilProfesional({ nav, params }) {
     if (!d.especialidad.trim()) e.especialidad = 'Escribe tu especialidad u oficio.';
     if (!d.zona.trim()) e.zona = 'Escribe tu zona de atención (colonia y ciudad).';
     if (!d.experiencia.trim()) e.experiencia = 'Describe brevemente tus habilidades y experiencia.';
+    if (documentos.evidencia === 'Adjuntar') {
+      // RF-03: la evidencia es obligatoria; sin ella no se envía la solicitud.
+      e.evidencia = 'Adjunta al menos una evidencia para enviar la solicitud.';
+    }
     setErrores(e);
     if (Object.keys(e).length === 0) {
       // Solicitud enviada: la cuenta queda en verificación; se vuelve al inicio.
@@ -82,21 +117,39 @@ export default function PerfilProfesional({ nav, params }) {
       <View style={styles.docsCard}>
         <View style={styles.docRow}>
           <Text style={styles.docTitulo}>IDENTIFICACIÓN OFICIAL</Text>
-          <Badge label="Adjunta" />
+          <Pressable
+            onPress={() => adjuntar('identificacion')}
+            accessibilityRole="button"
+            accessibilityLabel="Adjuntar identificación oficial"
+          >
+            <Badge label={documentos.identificacion} tone="teal" />
+          </Pressable>
         </View>
         <View style={styles.docRow}>
           <Text style={styles.docTitulo}>EVIDENCIA OBLIGATORIA</Text>
-          <Badge label="2 fotos adjuntas" />
+          <Pressable
+            onPress={() => adjuntar('evidencia')}
+            accessibilityRole="button"
+            accessibilityLabel="Adjuntar evidencia obligatoria"
+          >
+            <Badge label={documentos.evidencia} tone="teal" />
+          </Pressable>
         </View>
         <View style={styles.docRow}>
           <View style={{ flex: 1 }}>
             <Text style={styles.docTitulo}>CERTIFICADOS (OPCIONAL)</Text>
             <Text style={styles.docSub}>Para un rango inicial superior</Text>
           </View>
-          <Pressable accessibilityRole="button" accessibilityLabel="Adjuntar certificados">
-            <Badge label="Adjuntar" tone="teal" />
+          <Pressable
+            onPress={() => adjuntar('certificados')}
+            accessibilityRole="button"
+            accessibilityLabel="Adjuntar certificados"
+          >
+            <Badge label={documentos.certificados} tone="teal" />
           </Pressable>
         </View>
+        {avisoDocs ? <Text style={styles.avisoDocs}>{avisoDocs}</Text> : null}
+        {errores.evidencia ? <Text style={styles.avisoDocs}>{errores.evidencia}</Text> : null}
       </View>
 
       <Text style={styles.ayuda}>
@@ -140,6 +193,7 @@ const styles = StyleSheet.create({
   },
   docTitulo: { fontSize: 10.5, fontWeight: '700', fontFamily: F.bold, color: colors.navy, letterSpacing: 0.6 },
   docSub: { fontSize: 11, color: colors.textSec, marginTop: 2 },
+  avisoDocs: { color: colors.error, fontSize: 12, fontWeight: '600', fontFamily: F.semi, marginTop: 8 },
   ayuda: {
     color: colors.textSec,
     fontSize: 12,

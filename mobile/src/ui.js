@@ -5,34 +5,41 @@
  * botón principal teal y barra superior con menú y logo centrado.
  */
 import React, { useState } from 'react';
-import { Text, View, Pressable, StyleSheet, TextInput, Image, ActivityIndicator } from 'react-native';
+import { Text, View, Pressable, StyleSheet, TextInput, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, F } from './theme';
 
-/** Barra superior: menú hamburguesa a la izquierda y logo centrado. */
+/** Barra superior: botón de atrás (opcional) + menú hamburguesa + logo centrado. */
 export function TopBar({ onMenu, onBack }) {
+  const atras = onBack ? (
+    <Pressable
+      onPress={onBack}
+      hitSlop={12}
+      accessibilityRole="button"
+      accessibilityLabel="Regresar"
+      style={styles.topbarSide}
+    >
+      <Ionicons name="arrow-back" size={22} color={colors.navy} />
+    </Pressable>
+  ) : null;
+  const menu = onMenu ? (
+    <Pressable
+      onPress={onMenu}
+      hitSlop={12}
+      accessibilityRole="button"
+      accessibilityLabel="Abrir menú"
+      style={styles.topbarSide}
+    >
+      <Ionicons name="menu" size={24} color={colors.navy} />
+    </Pressable>
+  ) : null;
   return (
     <View style={styles.topbar}>
-      {onBack ? (
-        <Pressable
-          onPress={onBack}
-          hitSlop={12}
-          accessibilityRole="button"
-          accessibilityLabel="Regresar"
-          style={styles.topbarSide}
-        >
-          <Ionicons name="arrow-back" size={22} color={colors.navy} />
-        </Pressable>
-      ) : onMenu ? (
-        <Pressable
-          onPress={onMenu}
-          hitSlop={12}
-          accessibilityRole="button"
-          accessibilityLabel="Abrir menú"
-          style={styles.topbarSide}
-        >
-          <Ionicons name="menu" size={24} color={colors.navy} />
-        </Pressable>
+      {atras || menu ? (
+        <View style={styles.topbarIzquierda}>
+          {atras}
+          {menu}
+        </View>
       ) : (
         <View style={styles.topbarSide} />
       )}
@@ -132,14 +139,42 @@ export function TextInputBox({
   );
 }
 
-/** Selector estático (solo frontend): muestra el valor con chevron. */
-export function SelectBox({ value, placeholder }) {
+/** Selector real: al tocar abre la lista de opciones (deslizable/scroll). */
+export function SelectBox({ value, placeholder, opciones = [], onChange }) {
+  const [abierto, setAbierto] = useState(false);
   return (
-    <View style={styles.inputWrap}>
-      <Text style={[styles.inputText, !value && { color: colors.textSec }]}>
-        {value || placeholder}
-      </Text>
-      <Ionicons name="chevron-down" size={16} color={colors.navy} />
+    <View>
+      <Pressable
+        onPress={() => opciones.length > 0 && setAbierto(!abierto)}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: abierto }}
+        style={styles.inputWrap}
+      >
+        <Text style={[styles.inputText, !value && { color: colors.textSec }]}>
+          {value || placeholder}
+        </Text>
+        <Ionicons name={abierto ? 'chevron-up' : 'chevron-down'} size={16} color={colors.navy} />
+      </Pressable>
+      {abierto && (
+        <View style={styles.dropdown}>
+          <ScrollView style={{ maxHeight: 180 }} nestedScrollEnabled>
+            {opciones.map((o) => (
+              <Pressable
+                key={o}
+                onPress={() => {
+                  onChange && onChange(o);
+                  setAbierto(false);
+                }}
+                style={[styles.dropdownItem, o === value && styles.dropdownItemActivo]}
+              >
+                <Text style={[styles.dropdownTexto, o === value && { color: colors.teal, fontWeight: '700', fontFamily: F.bold }]}>
+                  {o}
+                </Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        </View>
+      )}
     </View>
   );
 }
@@ -329,6 +364,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     paddingBottom: spacing.sm,
   },
+  topbarIzquierda: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   topbarSide: { width: 34, alignItems: 'center' },
   escudoMini: { width: 30, height: 33 },
   label: {
@@ -378,6 +414,25 @@ const styles = StyleSheet.create({
   },
   checkboxBoxChecked: { backgroundColor: colors.mint, borderColor: colors.mint },
   checkboxText: { flex: 1, fontSize: 13, color: colors.navy, lineHeight: 18 },
+  dropdown: {
+    position: 'absolute',
+    top: 52,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    zIndex: 20,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  dropdownItem: { paddingVertical: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: colors.panel },
+  dropdownItemActivo: { backgroundColor: colors.mint },
+  dropdownTexto: { fontSize: 14, color: colors.navy },
   card: {
     backgroundColor: colors.white,
     borderRadius: radius.lg,
