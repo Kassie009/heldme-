@@ -55,57 +55,51 @@ export default function MenuLateral({ nav, params, sesion, pantallaActual = 'bus
           {tipo === 'profesionista' ? (
             <>
               <DrawerSection>Servicios</DrawerSection>
-              <MenuItem
-                icon="grid"
-                label="Panel principal"
-                active={pantallaActual === 'panelProfe'}
-                onPress={() => nav.reset('panelProfe', { tipo, nombre })}
-              />
               <MenuItem icon="construct" label="Mis servicios" onPress={() => nav.reset('misServiciosPro', { tipo, nombre })} />
               <MenuItem icon="document-text" label="Solicitudes recibidas" onPress={() => nav.reset('solicitudesPro', { tipo, nombre })} />
               <MenuItem
                 icon="receipt"
                 label="Mis cotizaciones"
                 active={pantallaActual === 'proMisCotizaciones'}
-                onPress={() => nav.resetConPadre('panelProfe', 'proMisCotizaciones', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'proMisCotizaciones', { tipo, nombre })}
               />
               <MenuItem icon="calendar" label="Calendario" onPress={() => nav.reset('calendarioPro', { tipo, nombre })} />
               <MenuItem
                 icon="key"
                 label="Iniciar servicio"
                 active={pantallaActual === 'proIniciarServicio'}
-                onPress={() => nav.resetConPadre('panelProfe', 'proIniciarServicio', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'proIniciarServicio', { tipo, nombre })}
               />
               <MenuItem
                 icon="checkmark-done"
                 label="Finalizar servicio"
                 active={pantallaActual === 'proFinalizarServicio' || pantallaActual === 'proSolicitarRevision'}
-                onPress={() => nav.resetConPadre('panelProfe', 'proFinalizarServicio', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'proFinalizarServicio', { tipo, nombre })}
               />
               <MenuItem
                 icon="cash"
                 label="Desglose del pago"
                 active={pantallaActual === 'proDesglosePago'}
-                onPress={() => nav.resetConPadre('panelProfe', 'proDesglosePago', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'proDesglosePago', { tipo, nombre })}
               />
               <MenuItem
                 icon="close-circle"
                 label="Cancelar contratación"
                 active={pantallaActual === 'proCancelarContratacion'}
-                onPress={() => nav.resetConPadre('panelProfe', 'proCancelarContratacion', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'proCancelarContratacion', { tipo, nombre })}
               />
               <MenuItem
                 icon="chatbubbles"
                 label="Chat"
                 active={pantallaActual === 'proConversaciones' || pantallaActual === 'proChat'}
-                onPress={() => nav.resetConPadre('panelProfe', 'proConversaciones', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'proConversaciones', { tipo, nombre })}
               />
               <MenuItem
                 icon="notifications"
                 label="Notificaciones"
                 right={<Badge label="2" tone="teal" />}
                 active={pantallaActual === 'notificaciones'}
-                onPress={() => nav.resetConPadre('panelProfe', 'notificaciones', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'notificaciones', { tipo, nombre })}
               />
 
               <DrawerSection>Aprendizaje</DrawerSection>
@@ -113,13 +107,13 @@ export default function MenuLateral({ nav, params, sesion, pantallaActual = 'bus
                 icon="ribbon"
                 label="Autorización de cursos"
                 active={pantallaActual === 'proCursosAutorizacion'}
-                onPress={() => nav.resetConPadre('panelProfe', 'proCursosAutorizacion', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'proCursosAutorizacion', { tipo, nombre })}
               />
               <MenuItem
                 icon="school"
                 label="Mis cursos"
                 active={pantallaActual === 'proMisCursos' || pantallaActual === 'proNuevoCurso'}
-                onPress={() => nav.resetConPadre('panelProfe', 'proMisCursos', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'proMisCursos', { tipo, nombre })}
               />
 
               <DrawerSection>Cuenta</DrawerSection>
@@ -127,13 +121,13 @@ export default function MenuLateral({ nav, params, sesion, pantallaActual = 'bus
                 icon="person"
                 label="Perfil y rango"
                 active={pantallaActual === 'proPerfilProfesional'}
-                onPress={() => nav.resetConPadre('panelProfe', 'proPerfilProfesional', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'proPerfilProfesional', { tipo, nombre })}
               />
               <MenuItem
                 icon="alert-circle"
                 label="Mis sanciones"
                 active={pantallaActual === 'proPerfilConSancion'}
-                onPress={() => nav.resetConPadre('panelProfe', 'proPerfilConSancion', { tipo, nombre })}
+                onPress={() => nav.resetConPadre('misServiciosPro', 'proPerfilConSancion', { tipo, nombre })}
               />
             </>
           ) : (
